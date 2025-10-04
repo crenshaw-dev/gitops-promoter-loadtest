@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: promoter-github-app-2025-10-04-15-46-41
+  namespace: promoter-system
+type: Opaque
+stringData:
+  githubAppPrivateKey: |
+    # PRIVATE_KEY_PLACEHOLDER - Use kubectl patch to add your private key
+
+---
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: ClusterScmProvider
+metadata:
+  name: promoter-test-2025-10-04-15-46-41
+spec:
+  secretRef:
+    name: promoter-github-app-2025-10-04-15-46-41
+  github:
+    appID: 2063184
+    installationID: 88716042
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-15-46-41"
+    asset-id: "0000"
+
+---
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: GitRepository
+metadata:
+  name: promoter-test-0000
+  namespace: promoter-test-0000
+spec:
+  github:
+    owner: crenshaw-dev
+    name: promoter-test-0000-deployment
+  scmProviderRef:
+    name: promoter-test-2025-10-04-15-46-41
+    kind: ClusterScmProvider
+---
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: PromotionStrategy
+metadata:
+  name: promoter-test-0000
+  namespace: promoter-test-0000
+spec:
+  activeCommitStatuses:
+  # The ArgoCDCommitStatus CR will maintain this commit status based on the application health.
+  - key: argocd-health
+  environments:
+  - branch: environment/dev-use2
+    autoMerge: true
+  - branch: environment/dev-usw2
+    autoMerge: true
+  - branch: environment/stg-use2
+    autoMerge: true
+  - branch: environment/stg-usw2
+    autoMerge: true
+  - branch: environment/prd-use2
+    autoMerge: false
+  - branch: environment/prd-usw2
+    autoMerge: false
+  gitRepositoryRef:
+    name: promoter-test-0000
+
+---
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: ArgoCDCommitStatus
+metadata:
+  name: promoter-test-0000
+  namespace: promoter-test-0000
+spec:
+  promotionStrategyRef:
+    name: promoter-test-0000
+  applicationSelector:
+    matchLabels:
+      asset: promoter-test-0000
+
+---
