@@ -13,6 +13,15 @@ spec:
     server: '{{PROMOTER_CLUSTER_URL}}'
     namespace: default
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
     - CreateNamespace=false
+  # Ignore differences in Secret data to preserve manually patched private keys
+  ignoreDifferences:
+  - group: ''
+    kind: Secret
+    jsonPointers:
+    - /data/githubAppPrivateKey
 

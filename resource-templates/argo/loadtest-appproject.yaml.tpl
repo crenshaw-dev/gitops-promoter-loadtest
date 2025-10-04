@@ -10,7 +10,16 @@ spec:
   destinations:
   - namespace: '*'
     server: '{{PROMOTER_CLUSTER_URL}}'
+  # Allow cluster-scoped resources
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+  - group: promoter.argoproj.io
+    kind: ClusterScmProvider
+  # Allow all GitOps Promoter resources (both deployed and child resources for resource tree visibility)
   namespaceResourceWhitelist:
-  - group: '*'
+  - group: ''
+    kind: Secret
+  - group: promoter.argoproj.io
     kind: '*'
 
