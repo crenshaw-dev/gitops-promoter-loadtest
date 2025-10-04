@@ -1,0 +1,233 @@
+
+========================================
+Promoter Load Test Setup
+========================================
+[INFO] Number of assets: 5
+[INFO] Asset GitHub Organization: crenshaw-dev
+[INFO] Asset GitHub URL: https://github.com
+[INFO] Load Test Repository: https://github.com/crenshaw-dev/gitops-promoter-loadtest
+[INFO] Promoter Cluster: https://kubernetes.default.svc
+[INFO] Argo CD Cluster: https://kubernetes.default.svc
+[INFO] Destination Cluster: https://kubernetes.default.svc
+[INFO] Run directory: runs/2025-10-04-17-16-55
+[INFO] Manifests directory: runs/2025-10-04-17-16-55/manifests
+[INFO] Log file: runs/2025-10-04-17-16-55/logs/setup.log
+
+========================================
+Validated Prerequisites
+========================================
+[INFO] ✓ Configuration loaded from config.sh
+[INFO] ✓ gh (GitHub CLI) found and authenticated
+[INFO] ✓ kubectl found
+[INFO] ✓ jq found
+[INFO] Copying test results template
+[INFO] Results file created: runs/2025-10-04-17-16-55/README.md
+
+========================================
+Detecting GitHub Account Type
+========================================
+[INFO] Auto-detecting account type for crenshaw-dev...
+[INFO] Detected as user account
+
+========================================
+GitHub App Configuration
+========================================
+[INFO] Using GitHub App configuration from config.sh:
+  → App Name: promoter-test-2025-10-04-14-52-33
+  → App ID: 2063184
+  → Key Path: /Users/mcrenshaw/Downloads/promoter-test-2025-10-04-14-52-33.2025-10-04.private-key.pem
+
+========================================
+Creating GitHub Repositories
+========================================
+[INFO] This will create 5 repositories (deployment only, config repos disabled)
+[INFO] Account type: user
+[STEP] Creating repositories for asset 0000
+  → Creating promoter-test-0000-deployment
+[WARN]   Repository crenshaw-dev/promoter-test-0000-deployment already exists, reusing it
+  → Setting up promoter-test-0000-deployment
+[WARN]   Repository already has content, pulling latest
+Already up to date.
+  →   Using default templates from repo-templates/asset-deployment
+[main 6de6692] Update deployment configuration for asset 0000
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+  →   Pushing to main
+To https://github.com/crenshaw-dev/promoter-test-0000-deployment.git
+   daa8656..6de6692  HEAD -> main
+[INFO]   ✓ Initialized repositories for asset 0000
+[STEP] Creating repositories for asset 0001
+  → Creating promoter-test-0001-deployment
+[WARN]   Repository crenshaw-dev/promoter-test-0001-deployment already exists, reusing it
+  → Setting up promoter-test-0001-deployment
+[WARN]   Repository already has content, pulling latest
+Already up to date.
+  →   Using default templates from repo-templates/asset-deployment
+[main 9a38678] Update deployment configuration for asset 0001
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+  →   Pushing to main
+To https://github.com/crenshaw-dev/promoter-test-0001-deployment.git
+   1393196..9a38678  HEAD -> main
+[INFO]   ✓ Initialized repositories for asset 0001
+[STEP] Creating repositories for asset 0002
+  → Creating promoter-test-0002-deployment
+[WARN]   Repository crenshaw-dev/promoter-test-0002-deployment already exists, reusing it
+  → Setting up promoter-test-0002-deployment
+[WARN]   Repository already has content, pulling latest
+Already up to date.
+  →   Using default templates from repo-templates/asset-deployment
+[main 95aac70] Update deployment configuration for asset 0002
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+  →   Pushing to main
+To https://github.com/crenshaw-dev/promoter-test-0002-deployment.git
+   6863617..95aac70  HEAD -> main
+[INFO]   ✓ Initialized repositories for asset 0002
+[STEP] Creating repositories for asset 0003
+  → Creating promoter-test-0003-deployment
+[WARN]   Repository crenshaw-dev/promoter-test-0003-deployment already exists, reusing it
+  → Setting up promoter-test-0003-deployment
+[WARN]   Repository already has content, pulling latest
+Already up to date.
+  →   Using default templates from repo-templates/asset-deployment
+[main 43efcd8] Update deployment configuration for asset 0003
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+  →   Pushing to main
+To https://github.com/crenshaw-dev/promoter-test-0003-deployment.git
+   ab5bb5a..43efcd8  HEAD -> main
+[INFO]   ✓ Initialized repositories for asset 0003
+[STEP] Creating repositories for asset 0004
+  → Creating promoter-test-0004-deployment
+[WARN]   Repository crenshaw-dev/promoter-test-0004-deployment already exists, reusing it
+  → Setting up promoter-test-0004-deployment
+[WARN]   Repository already has content, pulling latest
+Already up to date.
+  →   Using default templates from repo-templates/asset-deployment
+[main 66c9565] Update deployment configuration for asset 0004
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+  →   Pushing to main
+To https://github.com/crenshaw-dev/promoter-test-0004-deployment.git
+   d1ff02e..66c9565  HEAD -> main
+[INFO]   ✓ Initialized repositories for asset 0004
+[INFO] All repositories created and initialized
+[INFO] Using configured GitHub App Installation ID: 88727956
+
+========================================
+Generating Kubernetes Manifests
+========================================
+[STEP] Generating promoter cluster manifests
+[INFO] Generated promoter cluster manifests: runs/2025-10-04-17-16-55/manifests/promoter/all-resources.yaml
+[STEP] Generating Argo CD cluster manifests
+[INFO] Generated Argo CD cluster manifests: runs/2025-10-04-17-16-55/manifests/argocd/all-resources.yaml
+[STEP] Generating destination cluster manifests
+[INFO] Generated destination cluster manifests: runs/2025-10-04-17-16-55/manifests/destination/all-resources.yaml
+
+========================================
+Setup Summary
+========================================
+[INFO] Setup summary saved to runs/2025-10-04-17-16-55/logs/SETUP_SUMMARY.md
+
+========================================
+Setup Complete!
+========================================
+
+[INFO] Generated manifests for:
+  • 10 GitHub repositories
+  • 5 GitRepository resources
+  • 5 PromotionStrategy resources
+  • 5 ArgoCDCommitStatus resources
+  • 30 Argo CD Applications
+  • 35 Kubernetes Namespaces
+
+
+========================================
+Applying Kubernetes Manifests
+========================================
+
+[INFO] Now applying manifests to your clusters...
+
+[STEP] Creating GitHub App Secret...
+[INFO] Creating promoter-github-app secret imperatively with private key (not managed by GitOps)
+secret/promoter-github-app created
+[INFO] ✓ Secret created/updated successfully
+
+[STEP] Applying manifests to PROMOTER cluster...
+clusterscmprovider.promoter.argoproj.io/promoter-test created
+namespace/promoter-test-0000 created
+gitrepository.promoter.argoproj.io/promoter-test-0000 created
+promotionstrategy.promoter.argoproj.io/promoter-test-0000 created
+argocdcommitstatus.promoter.argoproj.io/promoter-test-0000 created
+namespace/promoter-test-0001 created
+gitrepository.promoter.argoproj.io/promoter-test-0001 created
+promotionstrategy.promoter.argoproj.io/promoter-test-0001 created
+argocdcommitstatus.promoter.argoproj.io/promoter-test-0001 created
+namespace/promoter-test-0002 created
+gitrepository.promoter.argoproj.io/promoter-test-0002 created
+promotionstrategy.promoter.argoproj.io/promoter-test-0002 created
+argocdcommitstatus.promoter.argoproj.io/promoter-test-0002 created
+namespace/promoter-test-0003 created
+gitrepository.promoter.argoproj.io/promoter-test-0003 created
+promotionstrategy.promoter.argoproj.io/promoter-test-0003 created
+argocdcommitstatus.promoter.argoproj.io/promoter-test-0003 created
+namespace/promoter-test-0004 created
+gitrepository.promoter.argoproj.io/promoter-test-0004 created
+promotionstrategy.promoter.argoproj.io/promoter-test-0004 created
+argocdcommitstatus.promoter.argoproj.io/promoter-test-0004 created
+[INFO] ✓ Promoter cluster resources created successfully
+
+[STEP] Patching promoter GitHub App secret with private key...
+secret/promoter-github-app-2025-10-04-17-16-55 created
+[INFO] ✓ Promoter secret patched successfully
+
+[STEP] Applying manifests to ARGO CD cluster...
+Warning: metadata.finalizers: "resources-finalizer.argocd.argoproj.io": prefer a domain-qualified finalizer name including a path (/) to avoid accidental conflicts with other finalizer writers
+appproject.argoproj.io/promoter-loadtest created
+application.argoproj.io/promoter-loadtest created
+appproject.argoproj.io/promoter-test-0000 created
+secret/promoter-test-0000-repo-write-creds created
+application.argoproj.io/promoter-test-0000-dev-use2 created
+application.argoproj.io/promoter-test-0000-dev-usw2 created
+application.argoproj.io/promoter-test-0000-stg-use2 created
+application.argoproj.io/promoter-test-0000-stg-usw2 created
+application.argoproj.io/promoter-test-0000-prd-use2 created
+application.argoproj.io/promoter-test-0000-prd-usw2 created
+appproject.argoproj.io/promoter-test-0001 created
+secret/promoter-test-0001-repo-write-creds created
+application.argoproj.io/promoter-test-0001-dev-use2 created
+application.argoproj.io/promoter-test-0001-dev-usw2 created
+application.argoproj.io/promoter-test-0001-stg-use2 created
+application.argoproj.io/promoter-test-0001-stg-usw2 created
+application.argoproj.io/promoter-test-0001-prd-use2 created
+application.argoproj.io/promoter-test-0001-prd-usw2 created
+appproject.argoproj.io/promoter-test-0002 created
+secret/promoter-test-0002-repo-write-creds created
+application.argoproj.io/promoter-test-0002-dev-use2 created
+application.argoproj.io/promoter-test-0002-dev-usw2 created
+application.argoproj.io/promoter-test-0002-stg-use2 created
+application.argoproj.io/promoter-test-0002-stg-usw2 created
+application.argoproj.io/promoter-test-0002-prd-use2 created
+application.argoproj.io/promoter-test-0002-prd-usw2 created
+appproject.argoproj.io/promoter-test-0003 created
+secret/promoter-test-0003-repo-write-creds created
+application.argoproj.io/promoter-test-0003-dev-use2 created
+application.argoproj.io/promoter-test-0003-dev-usw2 created
+application.argoproj.io/promoter-test-0003-stg-use2 created
+application.argoproj.io/promoter-test-0003-stg-usw2 created
+application.argoproj.io/promoter-test-0003-prd-use2 created
+application.argoproj.io/promoter-test-0003-prd-usw2 created
+appproject.argoproj.io/promoter-test-0004 created
+secret/promoter-test-0004-repo-write-creds created
+application.argoproj.io/promoter-test-0004-dev-use2 created
+application.argoproj.io/promoter-test-0004-dev-usw2 created
+application.argoproj.io/promoter-test-0004-stg-use2 created
+application.argoproj.io/promoter-test-0004-stg-usw2 created
+application.argoproj.io/promoter-test-0004-prd-use2 created
+application.argoproj.io/promoter-test-0004-prd-usw2 created
+[INFO] ✓ Argo CD cluster resources created successfully
+
+[STEP] Patching Argo CD repo-write-creds secrets with private key...
+Warning: resource secrets/promoter-test-0000-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+secret/promoter-test-0000-repo-write-creds configured
+Warning: resource secrets/promoter-test-0001-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+secret/promoter-test-0001-repo-write-creds configured
+Warning: resource secrets/promoter-test-0002-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+secret/promoter-test-0002-repo-write-creds configured
+Warning: resource secrets/promoter-test-0003-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl ap

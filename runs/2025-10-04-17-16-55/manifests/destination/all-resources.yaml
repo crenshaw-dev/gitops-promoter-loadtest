@@ -1,0 +1,360 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-dev-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0000"
+    environment: "dev"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-dev-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0000"
+    environment: "dev"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-stg-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0000"
+    environment: "stg"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-stg-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0000"
+    environment: "stg"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-prd-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0000"
+    environment: "prd"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-prd-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0000"
+    environment: "prd"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0001-dev-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0001"
+    environment: "dev"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0001-dev-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0001"
+    environment: "dev"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0001-stg-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0001"
+    environment: "stg"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0001-stg-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0001"
+    environment: "stg"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0001-prd-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0001"
+    environment: "prd"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0001-prd-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0001"
+    environment: "prd"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0002-dev-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0002"
+    environment: "dev"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0002-dev-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0002"
+    environment: "dev"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0002-stg-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0002"
+    environment: "stg"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0002-stg-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0002"
+    environment: "stg"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0002-prd-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0002"
+    environment: "prd"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0002-prd-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0002"
+    environment: "prd"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0003-dev-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0003"
+    environment: "dev"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0003-dev-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0003"
+    environment: "dev"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0003-stg-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0003"
+    environment: "stg"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0003-stg-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0003"
+    environment: "stg"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0003-prd-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0003"
+    environment: "prd"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0003-prd-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0003"
+    environment: "prd"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0004-dev-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0004"
+    environment: "dev"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0004-dev-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0004"
+    environment: "dev"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0004-stg-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0004"
+    environment: "stg"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0004-stg-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0004"
+    environment: "stg"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0004-prd-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0004"
+    environment: "prd"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0004-prd-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-17-16-55"
+    asset-id: "0004"
+    environment: "prd"
+    region: "usw2"
+
+---
