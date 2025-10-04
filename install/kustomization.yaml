@@ -1,11 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Install both Argo CD and GitOps Promoter for local load testing
 resources:
-  # Argo CD with Source Hydrator enabled
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.2.0-rc2/manifests/install-with-hydrator.yaml
-  # GitOps Promoter
+  # Argo CD with namespace overlay (creates argocd namespace and installs Argo CD in it)
+  - argocd-overlay
+  # GitOps Promoter (installs in promoter-system namespace)
   - https://github.com/argoproj-labs/gitops-promoter/releases/download/v0.13.0/install.yaml
 
 # Apply patches for local testing configuration

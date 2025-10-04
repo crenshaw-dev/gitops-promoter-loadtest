@@ -22,17 +22,16 @@ This directory contains Kustomize manifests to install Argo CD and GitOps Promot
 
 ## Installation
 
-First, create the necessary namespaces.
-
-```bash
-kubectl create ns argocd promoter-system
-```
-
 Install both Argo CD and GitOps Promoter with a single command:
 
 ```bash
 kubectl apply -k install/
 ```
+
+This will:
+- Create the `argocd` namespace and install Argo CD in it
+- Create the `promoter-system` namespace and install GitOps Promoter in it
+- Apply local testing configurations (faster reconciliation, UI extensions)
 
 Or using kustomize directly:
 

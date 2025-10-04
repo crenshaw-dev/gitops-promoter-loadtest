@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Set namespace for all Argo CD resources
+namespace: argocd
+
+resources:
+  # Create argocd namespace
+  - namespace.yaml
+  # Argo CD with Source Hydrator enabled
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.2.0-rc2/manifests/install-with-hydrator.yaml
+
