@@ -22,8 +22,3 @@ repo-templates.local/
 *.tmp
 *.bak
 .backup/
-
-# Test run data (contains generated manifests and logs)
-runs/*
-!runs/.gitkeep
-
