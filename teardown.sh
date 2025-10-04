@@ -186,9 +186,13 @@ if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
     kubectl delete namespaces -l load-test-run --ignore-not-found=true || log_warn "Some namespaces may not exist"
     
     log_info "Kubernetes resources deleted"
+    echo ""
 else
     log_warn "Skipped Kubernetes resource deletion"
-    echo "You can manually delete resources later using the commands above"
+    echo "You can manually delete resources later using the commands shown above."
+    echo ""
+    log_info "Teardown cancelled. No changes were made."
+    exit 0
 fi
 
 
