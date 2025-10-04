@@ -6,6 +6,10 @@ resources:
   - argocd-overlay
   # GitOps Promoter (installs in promoter-system namespace)
   - https://github.com/argoproj-labs/gitops-promoter/releases/download/v0.13.0/install.yaml
+  # Monitoring (Prometheus and Grafana with dashboards)
+  - monitoring
+  # RBAC for Prometheus to scrape GitOps Promoter metrics
+  - rbac
 
 # Apply patches for local testing configuration
 patches:

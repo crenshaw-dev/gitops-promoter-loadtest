@@ -22,3 +22,6 @@ repo-templates.local/
 *.tmp
 *.bak
 .backup/
+
+# Kustomize Helm chart vendor directory (generated when using --enable-helm)
+install/monitoring/charts/

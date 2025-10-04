@@ -1,0 +1,78 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+  - namespace.yaml
+  - servicemonitor-promoter.yaml
+  - servicemonitor-argocd.yaml
+
+helmCharts:
+  # Prometheus and Grafana stack
+  - name: kube-prometheus-stack
+    repo: https://prometheus-community.github.io/helm-charts
+    version: 77.13.0
+    releaseName: kube-prometheus-stack
+    namespace: monitoring
+    includeCRDs: true
+    valuesInline:
+      # Prometheus configuration
+      prometheus:
+        prometheusSpec:
+          serviceMonitorSelectorNilUsesHelmValues: false
+          podMonitorSelectorNilUsesHelmValues: false
+          retention: 24h
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+      
+      # Grafana configuration
+      grafana:
+        adminPassword: admin
+        persistence:
+          enabled: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        sidecar:
+          dashboards:
+            enabled: true
+            label: grafana_dashboard
+            labelValue: "1"
+            searchNamespace: monitoring
+      
+      # Disable unnecessary components for local testing
+      alertmanager:
+        enabled: false
+      
+      kubeStateMetrics:
+        enabled: true
+      
+      nodeExporter:
+        enabled: true
+      
+      prometheusOperator:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+configMapGenerator:
+  - name: grafana-dashboard-promoter
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - dashboard.json=dashboards/promoter-dashboard.json
+  - name: grafana-dashboard-argocd
+    namespace: monitoring
+    options:
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - dashboard.json=dashboards/argocd-dashboard.json
+

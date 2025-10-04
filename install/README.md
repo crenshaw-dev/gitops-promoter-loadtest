@@ -14,6 +14,13 @@ This directory contains Kustomize manifests to install Argo CD and GitOps Promot
 - **GitOps Promoter** (v0.13.0) with:
   - 30s requeue durations for all controllers (for local testing without webhooks)
 
+- **Monitoring Stack** (Prometheus + Grafana) with:
+  - Prometheus for metrics collection (24h retention)
+  - Grafana with pre-configured dashboards
+  - ServiceMonitors for Promoter and Argo CD
+  - Placeholder dashboards (to be populated with panels)
+  - See [`monitoring/README.md`](monitoring/README.md) for details
+
 ## Prerequisites
 
 - `kubectl` CLI
@@ -22,21 +29,34 @@ This directory contains Kustomize manifests to install Argo CD and GitOps Promot
 
 ## Installation
 
-Install both Argo CD and GitOps Promoter with a single command:
+Install Argo CD, GitOps Promoter, and monitoring:
 
 ```bash
-kubectl apply -k install/
+# With Helm support for Prometheus/Grafana
+# Note: --server-side is required for large Prometheus Operator CRDs
+kubectl kustomize --enable-helm install/ | kubectl apply --server-side -f -
 ```
 
 This will:
 - Create the `argocd` namespace and install Argo CD in it
 - Create the `promoter-system` namespace and install GitOps Promoter in it
+- Create the `monitoring` namespace and install Prometheus + Grafana
 - Apply local testing configurations (faster reconciliation, UI extensions)
+- Configure ServiceMonitors and dashboards for metrics collection
+- Configure RBAC for Prometheus to scrape GitOps Promoter metrics (protected by kube-rbac-proxy)
 
-Or using kustomize directly:
+Or using kustomize CLI directly:
 
 ```bash
-kustomize build install/ | kubectl apply -f -
+kustomize build --enable-helm install/ | kubectl apply --server-side -f -
+```
+
+**Note**: The `--enable-helm` flag is required for Prometheus/Grafana installation via Helm chart inflation. If you don't want monitoring, you can install without it:
+
+```bash
+# Without monitoring (no --enable-helm needed)
+kubectl apply -k install/argocd-overlay/
+kubectl apply -f https://github.com/argoproj-labs/gitops-promoter/releases/download/v0.13.0/install.yaml
 ```
 
 ## Verify Installation
@@ -72,6 +92,20 @@ Then visit: https://localhost:8080
 
 - Username: `admin`
 - Password: (from the command above)
+
+## Access Grafana UI
+
+```bash
+# Port-forward to access Grafana
+kubectl port-forward svc/kube-prometheus-stack-grafana -n monitoring 3000:80
+```
+
+Then visit: http://localhost:3000
+
+- Username: `admin`
+- Password: `admin`
+
+The Grafana instance includes placeholder dashboards for GitOps Promoter and Argo CD. See [`monitoring/README.md`](monitoring/README.md) for details on accessing metrics and populating the dashboards.
 
 ## Configuration Highlights
 
