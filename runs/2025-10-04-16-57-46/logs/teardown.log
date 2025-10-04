@@ -1,0 +1,91 @@
+
+========================================
+Promoter Load Test Teardown
+========================================
+[INFO] Run timestamp: 2025-10-04-16-57-46
+[INFO] Run directory: runs/2025-10-04-16-57-46
+[INFO] Log file: runs/2025-10-04-16-57-46/logs/teardown.log
+[INFO] Teardown started at: Sat Oct  4 17:00:53 EDT 2025
+[INFO] ✓ Configuration loaded from config.sh
+[INFO] ✓ kubectl found
+[INFO] This script will delete Kubernetes resources only.
+[WARN] GitHub repositories and apps will NOT be deleted (reuse them for future tests).
+
+========================================
+Deleting Kubernetes Resources
+========================================
+
+The following sequence will delete the Kubernetes resources:
+
+# Step 1: Delete Applications (cascade deletion via finalizers)
+kubectl delete applications -n argocd -l asset
+kubectl delete application promoter-loadtest -n argocd
+
+# Step 2: Delete AppProjects and Secrets (after Applications finish)
+kubectl delete appprojects -n argocd -l asset
+kubectl delete appproject promoter-loadtest -n argocd
+kubectl delete secrets -n argocd -l argocd.argoproj.io/secret-type=repository-write
+
+# Step 3: Delete cluster-scoped resources (not deleted by Argo CD)
+kubectl delete clusterscmprovider promoter-test
+
+# Step 4: Delete imperatively-created resources
+kubectl delete secret promoter-github-app -n promoter-system
+
+# Step 5: Cleanup any remaining namespaces
+kubectl delete namespaces -l load-test-run
+
+Note: Argo CD Application finalizers will automatically clean up managed resources!
+
+Would you like to execute these deletion commands now? (Y/n) 
+[STEP] Deleting Argo CD Applications (will cascade delete managed resources)...
+  → Deleting Applications (this will trigger cascade deletion of managed resources)...
+application.argoproj.io "promoter-test-0000-dev-use2" deleted
+application.argoproj.io "promoter-test-0000-dev-usw2" deleted
+application.argoproj.io "promoter-test-0000-prd-use2" deleted
+application.argoproj.io "promoter-test-0000-prd-usw2" deleted
+application.argoproj.io "promoter-test-0000-stg-use2" deleted
+application.argoproj.io "promoter-test-0000-stg-usw2" deleted
+  → Deleting loadtest Application (will cascade delete promoter resources)...
+application.argoproj.io "promoter-loadtest" deleted
+  → Waiting for Applications to finish deleting (this may take a minute)...
+  → All Applications deleted
+  → Deleting AppProjects and other Argo CD resources...
+No resources found
+appproject.argoproj.io "promoter-loadtest" deleted
+secret "promoter-test-0000-repo-write-creds" deleted
+[STEP] Deleting cluster-scoped resources (not deleted by Argo CD finalizers)...
+  → Deleting ClusterScmProvider...
+[STEP] Deleting imperatively-created resources...
+  → Deleting GitHub App Secret...
+secret "promoter-github-app" deleted
+[STEP] Cleaning up any remaining destination namespaces...
+namespace "promoter-test-0000-dev-use2" deleted
+namespace "promoter-test-0000-dev-usw2" deleted
+namespace "promoter-test-0000-prd-use2" deleted
+namespace "promoter-test-0000-prd-usw2" deleted
+namespace "promoter-test-0000-stg-use2" deleted
+namespace "promoter-test-0000-stg-usw2" deleted
+[INFO] Kubernetes resources deleted
+
+[INFO] Teardown summary saved to runs/2025-10-04-16-57-46/logs/TEARDOWN_SUMMARY.md
+
+========================================
+Teardown Complete
+========================================
+[INFO] Teardown finished at: Sat Oct  4 17:02:26 EDT 2025
+
+[INFO] Next steps:
+  1. Review teardown log: runs/2025-10-04-16-57-46/logs/teardown.log
+  2. Review teardown summary: runs/2025-10-04-16-57-46/logs/TEARDOWN_SUMMARY.md
+  3. Verify resources are deleted (see summary for verification commands)
+  4. Commit the teardown log:
+     git add runs/2025-10-04-16-57-46/logs/teardown.log runs/2025-10-04-16-57-46/logs/TEARDOWN_SUMMARY.md
+     git commit -m 'Add teardown log for load test run 2025-10-04-16-57-46'
+
+Would you like to commit the teardown log now? (Y/n) 
+[main 6d828b7] Add teardown log for load test run 2025-10-04-16-57-46
+ 3 files changed, 104 insertions(+), 1 deletion(-)
+ create mode 100644 runs/2025-10-04-16-57-46/logs/TEARDOWN_SUMMARY.md
+ create mode 100644 runs/2025-10-04-16-57-46/logs/teardown.log
+[INFO] Teardown log committed successfully
