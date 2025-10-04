@@ -99,3 +99,66 @@ secret/promoter-github-app created
 
 [STEP] Applying manifests to PROMOTER cluster...
 clusterscmprovider.promoter.argoproj.io/promoter-test created
+namespace/promoter-test-0000 created
+gitrepository.promoter.argoproj.io/promoter-test-0000 created
+promotionstrategy.promoter.argoproj.io/promoter-test-0000 created
+argocdcommitstatus.promoter.argoproj.io/promoter-test-0000 created
+[INFO] ✓ Promoter cluster resources created successfully
+
+[STEP] Patching promoter GitHub App secret with private key...
+secret/promoter-github-app-2025-10-04-16-11-02 created
+[INFO] ✓ Promoter secret patched successfully
+
+[STEP] Applying manifests to ARGO CD cluster...
+appproject.argoproj.io/promoter-loadtest created
+Warning: metadata.finalizers: "resources-finalizer.argocd.argoproj.io": prefer a domain-qualified finalizer name including a path (/) to avoid accidental conflicts with other finalizer writers
+application.argoproj.io/promoter-loadtest created
+appproject.argoproj.io/promoter-test-0000 created
+secret/promoter-test-0000-repo-write-creds created
+application.argoproj.io/promoter-test-0000-dev-use2 created
+application.argoproj.io/promoter-test-0000-dev-usw2 created
+application.argoproj.io/promoter-test-0000-stg-use2 created
+application.argoproj.io/promoter-test-0000-stg-usw2 created
+application.argoproj.io/promoter-test-0000-prd-use2 created
+application.argoproj.io/promoter-test-0000-prd-usw2 created
+[INFO] ✓ Argo CD cluster resources created successfully
+
+[STEP] Patching Argo CD repo-write-creds secrets with private key...
+Warning: resource secrets/promoter-test-0000-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+secret/promoter-test-0000-repo-write-creds configured
+[INFO] ✓ All Argo CD secrets patched successfully
+
+[STEP] Applying manifests to DESTINATION cluster...
+namespace/promoter-test-0000-dev-use2 created
+namespace/promoter-test-0000-dev-usw2 created
+namespace/promoter-test-0000-stg-use2 created
+namespace/promoter-test-0000-stg-usw2 created
+namespace/promoter-test-0000-prd-use2 created
+namespace/promoter-test-0000-prd-usw2 created
+[INFO] ✓ Destination cluster resources created successfully
+
+[INFO] All manifests created successfully!
+
+========================================
+Next Steps
+========================================
+
+1. Document your test results in:
+   runs/2025-10-04-16-11-02/README.md
+
+2. After testing, run teardown:
+   ./teardown.sh runs/2025-10-04-16-11-02
+
+
+Would you like to commit the generated test run files now? (Y/n) 
+[main fe45b0e] Add setup for load test run 2025-10-04-16-11-02 with 1 assets
+ 6 files changed, 758 insertions(+)
+ create mode 100644 runs/2025-10-04-16-11-02/README.md
+ create mode 100644 runs/2025-10-04-16-11-02/logs/SETUP_SUMMARY.md
+ create mode 100644 runs/2025-10-04-16-11-02/logs/setup.log
+ create mode 100644 runs/2025-10-04-16-11-02/manifests/argocd/all-resources.yaml
+ create mode 100644 runs/2025-10-04-16-11-02/manifests/destination/all-resources.yaml
+ create mode 100644 runs/2025-10-04-16-11-02/manifests/promoter/all-resources.yaml
+[INFO] Changes committed successfully
+
+[INFO] Setup complete! Review runs/2025-10-04-16-11-02/logs/SETUP_SUMMARY.md for details.
