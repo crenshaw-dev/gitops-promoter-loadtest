@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-dev-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-16-11-02"
+    asset-id: "0000"
+    environment: "dev"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-dev-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-16-11-02"
+    asset-id: "0000"
+    environment: "dev"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-stg-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-16-11-02"
+    asset-id: "0000"
+    environment: "stg"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-stg-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-16-11-02"
+    asset-id: "0000"
+    environment: "stg"
+    region: "usw2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-prd-use2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-16-11-02"
+    asset-id: "0000"
+    environment: "prd"
+    region: "use2"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: promoter-test-0000-prd-usw2
+  labels:
+    load-test: "true"
+    load-test-run: "2025-10-04-16-11-02"
+    asset-id: "0000"
+    environment: "prd"
+    region: "usw2"
+
+---
