@@ -22,6 +22,11 @@
 # export GITHUB_APP_KEY_PATH="/path/to/your/private-key.pem"
 # export GITHUB_APP_INSTALLATION_ID="12345678"
 
+# Example: Set git email for commits (required if you have GitHub email privacy enabled)
+# Use your GitHub noreply email address
+# export GIT_AUTHOR_EMAIL="username@users.noreply.github.com"
+# export GIT_COMMITTER_EMAIL="username@users.noreply.github.com"
+
 # Example: Override cluster URLs
 # export PROMOTER_CLUSTER_URL="https://my-promoter-cluster.example.com"
 # export ARGO_CLUSTER_URL="https://my-argo-cluster.example.com"

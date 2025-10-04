@@ -1,10 +1,10 @@
 apiVersion: promoter.argoproj.io/v1alpha1
 kind: ClusterScmProvider
 metadata:
-  name: promoter-test-{{TIMESTAMP}}
+  name: promoter-test
 spec:
   secretRef:
-    name: promoter-github-app-{{TIMESTAMP}}
+    name: promoter-github-app
   github:
     appID: {{GITHUB_APP_ID}}
     installationID: {{GITHUB_APP_INSTALLATION_ID}}

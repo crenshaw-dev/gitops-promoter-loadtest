@@ -322,13 +322,13 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
             log_warn "  Repository $REPO_FULL_NAME already exists, reusing it"
         else
             if [ "$GITHUB_ACCOUNT_TYPE" = "org" ]; then
-                if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$GITHUB_ORG/$CONFIG_REPO" --private 2>&1); then
+                if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$GITHUB_ORG/$CONFIG_REPO" --public 2>&1); then
                     log_error "Failed to create $CONFIG_REPO"
                     echo "$OUTPUT"
                     exit 1
                 fi
             else
-                if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$CONFIG_REPO" --private 2>&1); then
+                if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$CONFIG_REPO" --public 2>&1); then
                     log_error "Failed to create $CONFIG_REPO"
                     echo "$OUTPUT"
                     exit 1
@@ -347,13 +347,13 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
         log_warn "  Repository $REPO_FULL_NAME already exists, reusing it"
     else
         if [ "$GITHUB_ACCOUNT_TYPE" = "org" ]; then
-            if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$GITHUB_ORG/$DEPLOYMENT_REPO" --private 2>&1); then
+            if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$GITHUB_ORG/$DEPLOYMENT_REPO" --public 2>&1); then
                 log_error "Failed to create $DEPLOYMENT_REPO"
                 echo "$OUTPUT"
                 exit 1
             fi
         else
-            if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$DEPLOYMENT_REPO" --private 2>&1); then
+            if ! OUTPUT=$(GH_HOST="$GITHUB_DOMAIN" gh repo create "$DEPLOYMENT_REPO" --public 2>&1); then
                 log_error "Failed to create $DEPLOYMENT_REPO"
                 echo "$OUTPUT"
                 exit 1
@@ -427,6 +427,11 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
         git clone "$GITHUB_URL/$REPO_OWNER/$CONFIG_REPO.git" "$TEMP_DIR/$CONFIG_REPO" 2>/dev/null || true
         cd "$TEMP_DIR/$CONFIG_REPO"
         
+        # Configure git email if set (for GitHub email privacy)
+        if [ -n "$GIT_AUTHOR_EMAIL" ]; then
+            git config user.email "$GIT_AUTHOR_EMAIL"
+        fi
+        
         # Pull latest if repo already has content
         if [ "$(ls -A .)" ]; then
             log_warn "  Repository already has content, pulling latest"
@@ -452,8 +457,12 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
         if git diff --cached --quiet; then
             log_detail "  No changes to commit"
         else
-            git commit -m "Update configuration for asset $ASSET_ID" || true
-            git push origin main 2>/dev/null || git push origin master 2>/dev/null || true
+            git commit -m "Update configuration for asset $ASSET_ID"
+            
+            # Detect and push to the default branch
+            DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+            log_detail "  Pushing to $DEFAULT_BRANCH"
+            git push origin HEAD:$DEFAULT_BRANCH
         fi
     fi
     
@@ -462,6 +471,11 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
     cd "$TEMP_DIR"
     git clone "$GITHUB_URL/$REPO_OWNER/$DEPLOYMENT_REPO.git" "$TEMP_DIR/$DEPLOYMENT_REPO" 2>/dev/null || true
     cd "$TEMP_DIR/$DEPLOYMENT_REPO"
+    
+    # Configure git email if set (for GitHub email privacy)
+    if [ -n "$GIT_AUTHOR_EMAIL" ]; then
+        git config user.email "$GIT_AUTHOR_EMAIL"
+    fi
     
     # Pull latest if repo already has content
     if [ "$(ls -A .)" ]; then
@@ -488,8 +502,12 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
     if git diff --cached --quiet; then
         log_detail "  No changes to commit"
     else
-        git commit -m "Update deployment configuration for asset $ASSET_ID" || true
-        git push origin main 2>/dev/null || git push origin master 2>/dev/null || true
+        git commit -m "Update deployment configuration for asset $ASSET_ID"
+        
+        # Detect and push to the default branch
+        DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+        log_detail "  Pushing to $DEFAULT_BRANCH"
+        git push origin HEAD:$DEFAULT_BRANCH
     fi
     
     cd "$SCRIPT_DIR"
@@ -582,18 +600,13 @@ log_step "Generating promoter cluster manifests"
 # Create single manifests file for promoter cluster
 PROMOTER_MANIFESTS="$MANIFESTS_DIR/promoter/all-resources.yaml"
 
-# GitHub App Secret (with blank private key)
-sed -e "s/{{TIMESTAMP}}/$TIMESTAMP/g" \
-    -e "s/{{GITHUB_APP_PRIVATE_KEY_INDENTED}}/    # PRIVATE_KEY_PLACEHOLDER - Use kubectl patch to add your private key/" \
-    resource-templates/promoter/github-app-secret.yaml.tpl \
-    > "$PROMOTER_MANIFESTS"
+# GitHub App Secret (with empty data, static name for reuse)
+cat resource-templates/promoter/github-app-secret.yaml.tpl > "$PROMOTER_MANIFESTS"
 
 echo "---" >> "$PROMOTER_MANIFESTS"
 
-# ClusterScmProvider
-CLUSTER_SCM_PROVIDER_NAME="promoter-test-$TIMESTAMP"
-sed -e "s/{{TIMESTAMP}}/$TIMESTAMP/g" \
-    -e "s/{{GITHUB_APP_ID}}/$GITHUB_APP_ID/g" \
+# ClusterScmProvider (static name for reuse)
+sed -e "s/{{GITHUB_APP_ID}}/$GITHUB_APP_ID/g" \
     -e "s/{{GITHUB_APP_INSTALLATION_ID}}/$GITHUB_APP_INSTALLATION_ID/g" \
     -e "s|{{GITHUB_DOMAIN}}|$GITHUB_DOMAIN|g" \
     resource-templates/promoter/cluster-scm-provider.yaml.tpl | \
@@ -629,7 +642,6 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
     # GitRepository
     sed -e "s/{{ASSET_ID}}/$ASSET_ID/g" \
         -e "s|{{REPO_OWNER}}|$REPO_OWNER|g" \
-        -e "s|{{CLUSTER_SCM_PROVIDER_NAME}}|$CLUSTER_SCM_PROVIDER_NAME|g" \
         resource-templates/promoter/git-repository.yaml.tpl \
         >> "$PROMOTER_MANIFESTS"
     
@@ -704,7 +716,6 @@ for i in $(seq -f "%04g" 0 $((NUM_ASSETS - 1))); do
         -e "s/{{GITHUB_APP_ID}}/$GITHUB_APP_ID/g" \
         -e "s/{{GITHUB_APP_INSTALLATION_ID}}/$GITHUB_APP_INSTALLATION_ID/g" \
         -e "s|{{ARGOCD_NAMESPACE}}|$ARGOCD_NAMESPACE|g" \
-        -e "s/{{GITHUB_APP_PRIVATE_KEY_INDENTED}}/    # PRIVATE_KEY_PLACEHOLDER - Use kubectl patch to add your private key/" \
         resource-templates/argo/repo-write-creds-secret.yaml.tpl \
         >> "$ARGOCD_MANIFESTS"
     

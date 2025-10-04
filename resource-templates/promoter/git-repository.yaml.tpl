@@ -8,5 +8,5 @@ spec:
     owner: {{REPO_OWNER}}
     name: promoter-test-{{ASSET_ID}}-deployment
   scmProviderRef:
-    name: {{CLUSTER_SCM_PROVIDER_NAME}}
+    name: promoter-test
     kind: ClusterScmProvider

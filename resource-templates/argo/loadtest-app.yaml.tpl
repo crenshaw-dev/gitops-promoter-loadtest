@@ -18,6 +18,7 @@ spec:
       selfHeal: true
     syncOptions:
     - CreateNamespace=false
+    - RespectIgnoreDifferences=true
   # Ignore differences in Secret data to preserve manually patched private keys
   ignoreDifferences:
   - group: ''

@@ -23,6 +23,12 @@ export GITHUB_APP_ID="${GITHUB_APP_ID:-}"
 export GITHUB_APP_KEY_PATH="${GITHUB_APP_KEY_PATH:-}"
 export GITHUB_APP_INSTALLATION_ID="${GITHUB_APP_INSTALLATION_ID:-}"
 
+# Git Configuration (optional - for commits to test repos)
+# Set this to your GitHub noreply email if you have email privacy enabled
+# Format: USERNAME@users.noreply.github.com or ID+USERNAME@users.noreply.github.com
+export GIT_AUTHOR_EMAIL="${GIT_AUTHOR_EMAIL:-}"
+export GIT_COMMITTER_EMAIL="${GIT_COMMITTER_EMAIL:-}"
+
 # Cluster Configuration
 export PROMOTER_CLUSTER_URL="${PROMOTER_CLUSTER_URL:-https://kubernetes.default.svc}"
 export ARGO_CLUSTER_URL="${ARGO_CLUSTER_URL:-https://kubernetes.default.svc}"

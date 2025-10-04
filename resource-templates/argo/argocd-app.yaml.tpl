@@ -12,14 +12,14 @@ spec:
     namespace: promoter-test-{{ASSET_ID}}-{{ENV}}-{{REGION}}
   sourceHydrator:
     drySource:
-      repoURL: {{GITHUB_URL}}/{{GITHUB_ORG}}/promoter-test-{{ASSET_ID}}
+      repoURL: {{GITHUB_URL}}/{{GITHUB_ORG}}/promoter-test-{{ASSET_ID}}-deployment
       path: .
       targetRevision: HEAD
     hydrateTo:
       targetBranch: environment/{{ENV}}-{{REGION}}-next
     syncSource:
       targetBranch: environment/{{ENV}}-{{REGION}}
-      path: .
+      path: {{ENV}}-{{REGION}}
   syncPolicy:
     automated:
       selfHeal: true
