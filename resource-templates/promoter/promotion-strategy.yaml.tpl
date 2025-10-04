@@ -17,9 +17,9 @@ spec:
   - branch: environment/stg-usw2
     autoMerge: true
   - branch: environment/prd-use2
-    autoMerge: false
+    autoMerge: true
   - branch: environment/prd-usw2
-    autoMerge: false
+    autoMerge: true
   gitRepositoryRef:
     name: promoter-test-{{ASSET_ID}}
 
