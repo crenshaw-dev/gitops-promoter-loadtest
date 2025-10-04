@@ -78,4 +78,70 @@ application.argoproj.io "promoter-loadtest" deleted
 appproject.argoproj.io "promoter-test-0000" deleted
 appproject.argoproj.io "promoter-test-0001" deleted
 appproject.argoproj.io "promoter-test-0002" deleted
-appproject.argoproj.i
+appproject.argoproj.io "promoter-test-0003" deleted
+appproject.argoproj.io "promoter-test-0004" deleted
+appproject.argoproj.io "promoter-loadtest" deleted
+secret "promoter-test-0000-repo-write-creds" deleted
+secret "promoter-test-0001-repo-write-creds" deleted
+secret "promoter-test-0002-repo-write-creds" deleted
+secret "promoter-test-0003-repo-write-creds" deleted
+secret "promoter-test-0004-repo-write-creds" deleted
+[STEP] Deleting cluster-scoped resources (not deleted by Argo CD finalizers)...
+  → Deleting ClusterScmProvider...
+[STEP] Deleting imperatively-created resources...
+  → Deleting GitHub App Secret...
+secret "promoter-github-app" deleted
+[STEP] Cleaning up any remaining destination namespaces...
+namespace "promoter-test-0000-dev-use2" deleted
+namespace "promoter-test-0000-dev-usw2" deleted
+namespace "promoter-test-0000-prd-use2" deleted
+namespace "promoter-test-0000-prd-usw2" deleted
+namespace "promoter-test-0000-stg-use2" deleted
+namespace "promoter-test-0000-stg-usw2" deleted
+namespace "promoter-test-0001-dev-use2" deleted
+namespace "promoter-test-0001-dev-usw2" deleted
+namespace "promoter-test-0001-prd-use2" deleted
+namespace "promoter-test-0001-prd-usw2" deleted
+namespace "promoter-test-0001-stg-use2" deleted
+namespace "promoter-test-0001-stg-usw2" deleted
+namespace "promoter-test-0002-dev-use2" deleted
+namespace "promoter-test-0002-dev-usw2" deleted
+namespace "promoter-test-0002-prd-use2" deleted
+namespace "promoter-test-0002-prd-usw2" deleted
+namespace "promoter-test-0002-stg-use2" deleted
+namespace "promoter-test-0002-stg-usw2" deleted
+namespace "promoter-test-0003-dev-use2" deleted
+namespace "promoter-test-0003-dev-usw2" deleted
+namespace "promoter-test-0003-prd-use2" deleted
+namespace "promoter-test-0003-prd-usw2" deleted
+namespace "promoter-test-0003-stg-use2" deleted
+namespace "promoter-test-0003-stg-usw2" deleted
+namespace "promoter-test-0004-dev-use2" deleted
+namespace "promoter-test-0004-dev-usw2" deleted
+namespace "promoter-test-0004-prd-use2" deleted
+namespace "promoter-test-0004-prd-usw2" deleted
+namespace "promoter-test-0004-stg-use2" deleted
+namespace "promoter-test-0004-stg-usw2" deleted
+[INFO] Kubernetes resources deleted
+
+[INFO] Teardown summary saved to runs/2025-10-04-17-15-09/logs/TEARDOWN_SUMMARY.md
+
+========================================
+Teardown Complete
+========================================
+[INFO] Teardown finished at: Sat Oct  4 17:16:44 EDT 2025
+
+[INFO] Next steps:
+  1. Review teardown log: runs/2025-10-04-17-15-09/logs/teardown.log
+  2. Review teardown summary: runs/2025-10-04-17-15-09/logs/TEARDOWN_SUMMARY.md
+  3. Verify resources are deleted (see summary for verification commands)
+  4. Commit the teardown log:
+     git add runs/2025-10-04-17-15-09/logs/teardown.log runs/2025-10-04-17-15-09/logs/TEARDOWN_SUMMARY.md
+     git commit -m 'Add teardown log for load test run 2025-10-04-17-15-09'
+
+Would you like to commit the teardown log now? (Y/n) 
+[main dbc94da] Add teardown log for load test run 2025-10-04-17-15-09
+ 2 files changed, 121 insertions(+)
+ create mode 100644 runs/2025-10-04-17-15-09/logs/TEARDOWN_SUMMARY.md
+ create mode 100644 runs/2025-10-04-17-15-09/logs/teardown.log
+[INFO] Teardown log committed successfully
