@@ -48,6 +48,7 @@ promoter-load-test/
 ├── config.sh                    # Configuration file
 ├── config.local.sh              # Config overrides (gitignored)
 ├── setup.sh                     # Setup script to create test resources
+├── update-deployments.sh        # Script to continuously update deployment repos
 ├── teardown.sh                  # Teardown script to clean up resources
 ├── test-results-template.md     # Template for recording test results
 ├── install/                     # Kustomize installation for local testing
@@ -106,6 +107,7 @@ promoter-load-test/
 - **kubectl CLI**: For applying Kubernetes manifests
 - **GitHub CLI (gh)**: For creating repositories and GitHub Apps
 - **jq**: For JSON parsing
+- **yq**: For YAML manipulation (used by update-deployments.sh)
 - **git**: For repository operations
 - **Kubernetes cluster**: Local (kind, k3d, minikube, Docker Desktop) or remote
 - **GitHub Organization**: With appropriate permissions to create repositories and apps
@@ -281,16 +283,55 @@ This design:
 - Fails fast if resources already exist
 - Ensures clean baseline for load testing
 
-#### 3. Run Your Test
+#### 3. Generate Load
 
-Execute your load test procedures and monitor the controllers. Document everything in the `runs/<timestamp>/README.md` file, including:
-- Test parameters
-- Observations
-- Metrics collected
-- Issues encountered
-- Performance characteristics
+To test the promoter under realistic conditions, you need to trigger promotions by updating the deployment repositories. Use the provided update script:
 
-#### 4. Commit Results
+```bash
+# Use defaults (5min interval ± 30s jitter, update configmap.yaml data.timestamp)
+./update-deployments.sh
+
+# Custom timing: update every 2 minutes with 10s jitter
+./update-deployments.sh 120 10
+
+# Update a different file/path every 1 minute with 15s jitter
+./update-deployments.sh 60 15 values.yaml version
+
+# Update JSON file with custom path
+./update-deployments.sh 180 20 config.json build.timestamp
+```
+
+**Parameters:**
+- `DURATION`: Time between updates in seconds (default: 300 = 5 minutes)
+- `JITTER`: Random variation in seconds (default: 30 = ±30s)
+- `FILENAME`: File to update in deployment repos (default: `configmap.yaml`)
+- `JQ_PATH`: Path to update with timestamp (default: `data.timestamp`)
+
+The script will:
+- Clone all deployment repos from your latest run
+- Continuously update the specified file/path with timestamps
+- Add random jitter to spread out updates across repos
+- Commit and push changes automatically
+- Run indefinitely until stopped with Ctrl+C
+
+**What this triggers:**
+1. **Argo CD** detects changes and hydrates manifests to `-next` branches
+2. **GitOps Promoter** detects proposed changes in `-next` branches
+3. **Promoter** creates/updates PullRequests for each environment
+4. **With autoMerge enabled**: PRs are automatically merged when healthy
+5. **Argo CD** syncs the merged changes to destination clusters
+6. **Process repeats** for each environment (dev → stg → prd)
+
+#### 4. Monitor Your Test
+
+While the update script runs, monitor the controllers and document everything in the `runs/<timestamp>/README.md` file, including:
+- Test parameters (number of assets, update frequency, duration)
+- Observations (controller behavior, resource usage)
+- Metrics collected (reconciliation times, PR merge rates)
+- Issues encountered (errors, stuck resources, performance issues)
+- Performance characteristics (CPU, memory, API rate)
+
+#### 5. Commit Results
 
 After completing the test and filling out the results file:
 
@@ -299,7 +340,7 @@ git add runs/<timestamp>/README.md
 git commit -m "Add results for load test run <timestamp>"
 ```
 
-#### 5. Teardown
+#### 6. Teardown
 
 Clean up the test resources:
 
