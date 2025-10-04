@@ -118,45 +118,59 @@ log_warn "GitHub repositories and apps will NOT be deleted (reuse them for futur
 print_header "Deleting Kubernetes Resources"
 
 echo ""
-echo -e "${YELLOW}The following commands will delete the Kubernetes resources:${NC}"
+echo -e "${YELLOW}The following sequence will delete the Kubernetes resources:${NC}"
 echo ""
-echo -e "${CYAN}# Promoter Cluster:${NC}"
-echo -e "kubectl delete secret promoter-github-app -n promoter-system --ignore-not-found=true"
-echo -e "kubectl delete -f $MANIFESTS_DIR/promoter/all-resources.yaml"
+echo -e "${CYAN}# Step 1: Delete Applications (cascade deletion via finalizers)${NC}"
+echo -e "kubectl delete applications -n $ARGOCD_NAMESPACE -l asset"
+echo -e "kubectl delete application promoter-loadtest -n $ARGOCD_NAMESPACE"
 echo ""
-echo -e "${CYAN}# Argo CD Cluster:${NC}"
-echo -e "kubectl delete -f $MANIFESTS_DIR/argocd/all-resources.yaml"
+echo -e "${CYAN}# Step 2: Delete AppProjects and Secrets (after Applications finish)${NC}"
+echo -e "kubectl delete appprojects -n $ARGOCD_NAMESPACE -l asset"
+echo -e "kubectl delete appproject promoter-loadtest -n $ARGOCD_NAMESPACE"
+echo -e "kubectl delete secrets -n $ARGOCD_NAMESPACE -l argocd.argoproj.io/secret-type=repository-write"
 echo ""
-echo -e "${CYAN}# Destination Cluster:${NC}"
-echo -e "kubectl delete -f $MANIFESTS_DIR/destination/all-resources.yaml"
+echo -e "${CYAN}# Step 3: Delete imperatively-created resources${NC}"
+echo -e "kubectl delete secret promoter-github-app -n promoter-system"
+echo ""
+echo -e "${CYAN}# Step 4: Cleanup any remaining namespaces${NC}"
+echo -e "kubectl delete namespaces -l load-test-run"
+echo ""
+echo -e "${GREEN}Note: Argo CD Application finalizers will automatically clean up managed resources!${NC}"
 echo ""
 
 read -p "Would you like to execute these deletion commands now? (Y/n) " -r
 echo
 if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
-    log_step "Deleting resources from Promoter cluster..."
-    log_detail "Deleting imperatively-created GitHub App Secret..."
-    kubectl delete secret promoter-github-app -n promoter-system --ignore-not-found=true || log_warn "Secret may not exist"
-    
-    if [ -f "$MANIFESTS_DIR/promoter/all-resources.yaml" ]; then
-        kubectl delete -f "$MANIFESTS_DIR/promoter/all-resources.yaml" --ignore-not-found=true || log_warn "Some promoter resources may not exist"
-    else
-        log_warn "Promoter manifests file not found"
-    fi
-    
-    log_step "Deleting resources from Argo CD cluster..."
+    log_step "Deleting Argo CD Applications (will cascade delete managed resources)..."
     if [ -f "$MANIFESTS_DIR/argocd/all-resources.yaml" ]; then
-        kubectl delete -f "$MANIFESTS_DIR/argocd/all-resources.yaml" --ignore-not-found=true || log_warn "Some Argo CD resources may not exist"
+        # Delete Applications first - their finalizers will clean up destination resources
+        log_detail "Deleting Applications (this will trigger cascade deletion of managed resources)..."
+        kubectl delete applications -n "$ARGOCD_NAMESPACE" -l asset --ignore-not-found=true || log_warn "Some Applications may not exist"
+        
+        # Delete loadtest Application
+        log_detail "Deleting loadtest Application (will cascade delete promoter resources)..."
+        kubectl delete application promoter-loadtest -n "$ARGOCD_NAMESPACE" --ignore-not-found=true || log_warn "Loadtest Application may not exist"
+        
+        # Wait for Applications to actually be deleted (finalizers to complete)
+        log_detail "Waiting for Applications to finish deleting (this may take a minute)..."
+        kubectl wait --for=delete application -l asset -n "$ARGOCD_NAMESPACE" --timeout=120s 2>/dev/null || log_warn "Timeout or no Applications found"
+        kubectl wait --for=delete application promoter-loadtest -n "$ARGOCD_NAMESPACE" --timeout=120s 2>/dev/null || log_warn "Timeout or Application not found"
+        
+        # Now delete AppProjects and other Argo CD resources
+        log_detail "Deleting AppProjects and other Argo CD resources..."
+        kubectl delete appprojects -n "$ARGOCD_NAMESPACE" -l asset --ignore-not-found=true || log_warn "Some AppProjects may not exist"
+        kubectl delete appproject promoter-loadtest -n "$ARGOCD_NAMESPACE" --ignore-not-found=true || log_warn "Loadtest AppProject may not exist"
+        kubectl delete secrets -n "$ARGOCD_NAMESPACE" -l argocd.argoproj.io/secret-type=repository-write --ignore-not-found=true || log_warn "Some Secrets may not exist"
     else
         log_warn "Argo CD manifests file not found"
     fi
     
-    log_step "Deleting resources from Destination cluster..."
-    if [ -f "$MANIFESTS_DIR/destination/all-resources.yaml" ]; then
-        kubectl delete -f "$MANIFESTS_DIR/destination/all-resources.yaml" --ignore-not-found=true || log_warn "Some destination resources may not exist"
-    else
-        log_warn "Destination manifests file not found"
-    fi
+    log_step "Deleting imperatively-created resources..."
+    log_detail "Deleting GitHub App Secret..."
+    kubectl delete secret promoter-github-app -n promoter-system --ignore-not-found=true || log_warn "Secret may not exist"
+    
+    log_step "Cleaning up any remaining destination namespaces..."
+    kubectl delete namespaces -l load-test-run --ignore-not-found=true || log_warn "Some namespaces may not exist"
     
     log_info "Kubernetes resources deleted"
 else

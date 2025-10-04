@@ -3,6 +3,8 @@ kind: AppProject
 metadata:
   name: promoter-loadtest
   namespace: {{ARGOCD_NAMESPACE}}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   description: Load test project for deploying promoter manifests
   sourceRepos:

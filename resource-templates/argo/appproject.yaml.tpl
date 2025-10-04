@@ -3,6 +3,8 @@ kind: AppProject
 metadata:
   name: promoter-test-{{ASSET_ID}}
   namespace: {{ARGOCD_NAMESPACE}}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   description: Load test project for asset {{ASSET_ID}}
   sourceRepos:
