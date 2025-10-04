@@ -153,4 +153,40 @@ application.argoproj.io/promoter-test-0000-prd-usw2 created
 
 [STEP] Patching Argo CD repo-write-creds secrets with private key...
 Warning: resource secrets/promoter-test-0000-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
-secret/promoter-test-0000-repo-write-creds config
+secret/promoter-test-0000-repo-write-creds configured
+[INFO] ✓ All Argo CD secrets patched successfully
+
+[STEP] Applying manifests to DESTINATION cluster...
+namespace/promoter-test-0000-dev-use2 created
+namespace/promoter-test-0000-dev-usw2 created
+namespace/promoter-test-0000-stg-use2 created
+namespace/promoter-test-0000-stg-usw2 created
+namespace/promoter-test-0000-prd-use2 created
+namespace/promoter-test-0000-prd-usw2 created
+[INFO] ✓ Destination cluster resources created successfully
+
+[INFO] All manifests created successfully!
+
+========================================
+Next Steps
+========================================
+
+1. Document your test results in:
+   runs/2025-10-04-15-24-43/README.md
+
+2. After testing, run teardown:
+   ./teardown.sh runs/2025-10-04-15-24-43
+
+
+Would you like to commit the generated test run files now? (Y/n) 
+[main c0cf521] Add setup for load test run 2025-10-04-15-24-43 with 1 assets
+ 6 files changed, 806 insertions(+)
+ create mode 100644 runs/2025-10-04-15-24-43/README.md
+ create mode 100644 runs/2025-10-04-15-24-43/logs/SETUP_SUMMARY.md
+ create mode 100644 runs/2025-10-04-15-24-43/logs/setup.log
+ create mode 100644 runs/2025-10-04-15-24-43/manifests/argocd/all-resources.yaml
+ create mode 100644 runs/2025-10-04-15-24-43/manifests/destination/all-resources.yaml
+ create mode 100644 runs/2025-10-04-15-24-43/manifests/promoter/all-resources.yaml
+[INFO] Changes committed successfully
+
+[INFO] Setup complete! Review runs/2025-10-04-15-24-43/logs/SETUP_SUMMARY.md for details.
