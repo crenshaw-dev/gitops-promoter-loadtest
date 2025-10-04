@@ -1,0 +1,81 @@
+
+========================================
+Promoter Load Test Teardown
+========================================
+[INFO] Run timestamp: 2025-10-04-17-16-55
+[INFO] Run directory: runs/2025-10-04-17-16-55/
+[INFO] Log file: runs/2025-10-04-17-16-55//logs/teardown.log
+[INFO] Teardown started at: Sat Oct  4 19:02:50 EDT 2025
+[INFO] ✓ Configuration loaded from config.sh
+[INFO] ✓ kubectl found
+[INFO] This script will delete Kubernetes resources only.
+[WARN] GitHub repositories and apps will NOT be deleted (reuse them for future tests).
+
+========================================
+Deleting Kubernetes Resources
+========================================
+
+The following sequence will delete the Kubernetes resources:
+
+# Step 1: Delete Applications (cascade deletion via finalizers)
+kubectl delete applications -n argocd -l asset
+kubectl delete application promoter-loadtest -n argocd
+
+# Step 2: Delete AppProjects and Secrets (after Applications finish)
+kubectl delete appprojects -n argocd -l asset
+kubectl delete appproject promoter-loadtest -n argocd
+kubectl delete secrets -n argocd -l argocd.argoproj.io/secret-type=repository-write
+
+# Step 3: Delete cluster-scoped resources (not deleted by Argo CD)
+kubectl delete clusterscmprovider promoter-test
+
+# Step 4: Delete imperatively-created resources
+kubectl delete secret promoter-github-app -n promoter-system
+
+# Step 5: Cleanup any remaining namespaces
+kubectl delete namespaces -l load-test-run
+
+Note: Argo CD Application finalizers will automatically clean up managed resources!
+
+Would you like to execute these deletion commands now? (Y/n) 
+[STEP] Deleting Argo CD Applications (will cascade delete managed resources)...
+  → Deleting Applications (this will trigger cascade deletion of managed resources)...
+application.argoproj.io "promoter-test-0000-dev-use2" deleted
+application.argoproj.io "promoter-test-0000-dev-usw2" deleted
+application.argoproj.io "promoter-test-0000-prd-use2" deleted
+application.argoproj.io "promoter-test-0000-prd-usw2" deleted
+application.argoproj.io "promoter-test-0000-stg-use2" deleted
+application.argoproj.io "promoter-test-0000-stg-usw2" deleted
+application.argoproj.io "promoter-test-0001-dev-use2" deleted
+application.argoproj.io "promoter-test-0001-dev-usw2" deleted
+application.argoproj.io "promoter-test-0001-prd-use2" deleted
+application.argoproj.io "promoter-test-0001-prd-usw2" deleted
+application.argoproj.io "promoter-test-0001-stg-use2" deleted
+application.argoproj.io "promoter-test-0001-stg-usw2" deleted
+application.argoproj.io "promoter-test-0002-dev-use2" deleted
+application.argoproj.io "promoter-test-0002-dev-usw2" deleted
+application.argoproj.io "promoter-test-0002-prd-use2" deleted
+application.argoproj.io "promoter-test-0002-prd-usw2" deleted
+application.argoproj.io "promoter-test-0002-stg-use2" deleted
+application.argoproj.io "promoter-test-0002-stg-usw2" deleted
+application.argoproj.io "promoter-test-0003-dev-use2" deleted
+application.argoproj.io "promoter-test-0003-dev-usw2" deleted
+application.argoproj.io "promoter-test-0003-prd-use2" deleted
+application.argoproj.io "promoter-test-0003-prd-usw2" deleted
+application.argoproj.io "promoter-test-0003-stg-use2" deleted
+application.argoproj.io "promoter-test-0003-stg-usw2" deleted
+application.argoproj.io "promoter-test-0004-dev-use2" deleted
+application.argoproj.io "promoter-test-0004-dev-usw2" deleted
+application.argoproj.io "promoter-test-0004-prd-use2" deleted
+application.argoproj.io "promoter-test-0004-prd-usw2" deleted
+application.argoproj.io "promoter-test-0004-stg-use2" deleted
+application.argoproj.io "promoter-test-0004-stg-usw2" deleted
+  → Deleting loadtest Application (will cascade delete promoter resources)...
+application.argoproj.io "promoter-loadtest" deleted
+  → Waiting for Applications to finish deleting (this may take a minute)...
+  → All Applications deleted
+  → Deleting AppProjects and other Argo CD resources...
+appproject.argoproj.io "promoter-test-0000" deleted
+appproject.argoproj.io "promoter-test-0001" deleted
+appproject.argoproj.io "promoter-test-0002" deleted
+appproject.argoproj
