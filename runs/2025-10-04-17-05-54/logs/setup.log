@@ -322,4 +322,66 @@ secret/promoter-test-0001-repo-write-creds configured
 Warning: resource secrets/promoter-test-0002-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
 secret/promoter-test-0002-repo-write-creds configured
 Warning: resource secrets/promoter-test-0003-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
-secret/promoter-t
+secret/promoter-test-0003-repo-write-creds configured
+Warning: resource secrets/promoter-test-0004-repo-write-creds is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by kubectl apply. kubectl apply should only be used on resources created declaratively by either kubectl create --save-config or kubectl apply. The missing annotation will be patched automatically.
+secret/promoter-test-0004-repo-write-creds configured
+[INFO] ✓ All Argo CD secrets patched successfully
+
+[STEP] Applying manifests to DESTINATION cluster...
+namespace/promoter-test-0000-dev-use2 created
+namespace/promoter-test-0000-dev-usw2 created
+namespace/promoter-test-0000-stg-use2 created
+namespace/promoter-test-0000-stg-usw2 created
+namespace/promoter-test-0000-prd-use2 created
+namespace/promoter-test-0000-prd-usw2 created
+namespace/promoter-test-0001-dev-use2 created
+namespace/promoter-test-0001-dev-usw2 created
+namespace/promoter-test-0001-stg-use2 created
+namespace/promoter-test-0001-stg-usw2 created
+namespace/promoter-test-0001-prd-use2 created
+namespace/promoter-test-0001-prd-usw2 created
+namespace/promoter-test-0002-dev-use2 created
+namespace/promoter-test-0002-dev-usw2 created
+namespace/promoter-test-0002-stg-use2 created
+namespace/promoter-test-0002-stg-usw2 created
+namespace/promoter-test-0002-prd-use2 created
+namespace/promoter-test-0002-prd-usw2 created
+namespace/promoter-test-0003-dev-use2 created
+namespace/promoter-test-0003-dev-usw2 created
+namespace/promoter-test-0003-stg-use2 created
+namespace/promoter-test-0003-stg-usw2 created
+namespace/promoter-test-0003-prd-use2 created
+namespace/promoter-test-0003-prd-usw2 created
+namespace/promoter-test-0004-dev-use2 created
+namespace/promoter-test-0004-dev-usw2 created
+namespace/promoter-test-0004-stg-use2 created
+namespace/promoter-test-0004-stg-usw2 created
+namespace/promoter-test-0004-prd-use2 created
+namespace/promoter-test-0004-prd-usw2 created
+[INFO] ✓ Destination cluster resources created successfully
+
+[INFO] All manifests created successfully!
+
+========================================
+Next Steps
+========================================
+
+1. Document your test results in:
+   runs/2025-10-04-17-05-54/README.md
+
+2. After testing, run teardown:
+   ./teardown.sh runs/2025-10-04-17-05-54
+
+
+Would you like to commit the generated test run files now? (Y/n) 
+[main dae153f] Add setup for load test run 2025-10-04-17-05-54 with 5 assets
+ 6 files changed, 2394 insertions(+)
+ create mode 100644 runs/2025-10-04-17-05-54/README.md
+ create mode 100644 runs/2025-10-04-17-05-54/logs/SETUP_SUMMARY.md
+ create mode 100644 runs/2025-10-04-17-05-54/logs/setup.log
+ create mode 100644 runs/2025-10-04-17-05-54/manifests/argocd/all-resources.yaml
+ create mode 100644 runs/2025-10-04-17-05-54/manifests/destination/all-resources.yaml
+ create mode 100644 runs/2025-10-04-17-05-54/manifests/promoter/all-resources.yaml
+[INFO] Changes committed successfully
+
+[INFO] Setup complete! Review runs/2025-10-04-17-05-54/logs/SETUP_SUMMARY.md for details.
