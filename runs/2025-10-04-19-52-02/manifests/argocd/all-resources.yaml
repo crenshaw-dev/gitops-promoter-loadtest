@@ -1,0 +1,1129 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: promoter-loadtest
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Load test project for deploying promoter manifests
+  sourceRepos:
+  - 'https://github.com/crenshaw-dev/gitops-promoter-loadtest'
+  destinations:
+  - namespace: '*'
+    server: 'https://kubernetes.default.svc'
+  # Allow cluster-scoped resources
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+  - group: promoter.argoproj.io
+    kind: ClusterScmProvider
+  # Allow all GitOps Promoter resources (both deployed and child resources for resource tree visibility)
+  namespaceResourceWhitelist:
+  - group: ''
+    kind: Secret
+  - group: promoter.argoproj.io
+    kind: '*'
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-loadtest
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-loadtest
+  source:
+    repoURL: 'https://github.com/crenshaw-dev/gitops-promoter-loadtest'
+    targetRevision: HEAD
+    path: runs/2025-10-04-19-52-02/manifests/promoter
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false
+    - RespectIgnoreDifferences=true
+  # Ignore differences in Secret data to preserve manually patched private keys
+  ignoreDifferences:
+  - group: ''
+    kind: Secret
+    jsonPointers:
+    - /data
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: promoter-test-0000
+  namespace: argocd
+  labels:
+    asset: promoter-test-0000
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Load test project for asset 0000
+  sourceRepos:
+  - 'https://github.com/crenshaw-dev/promoter-test-0000'
+  - 'https://github.com/crenshaw-dev/promoter-test-0000-deployment'
+  destinations:
+  - namespace: 'promoter-test-0000-*'
+    server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: promoter-test-0000-repo-write-creds
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository-write
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/crenshaw-dev/promoter-test-0000-deployment
+  githubAppID: "2063184"
+  githubAppInstallationID: "88727956"
+data: {}
+  # githubAppPrivateKey should be patched after applying using:
+  # kubectl create secret generic promoter-test-0000-repo-write-creds --from-file=githubAppPrivateKey=path/to/key.pem --dry-run=client -o yaml -n argocd | kubectl apply -f -
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0000-dev-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0000
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0000-dev-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0000-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-use2-next
+    syncSource:
+      targetBranch: environment/dev-use2
+      path: dev-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0000-dev-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0000
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0000-dev-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0000-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-usw2-next
+    syncSource:
+      targetBranch: environment/dev-usw2
+      path: dev-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0000-stg-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0000
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0000-stg-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0000-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-use2-next
+    syncSource:
+      targetBranch: environment/stg-use2
+      path: stg-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0000-stg-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0000
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0000-stg-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0000-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-usw2-next
+    syncSource:
+      targetBranch: environment/stg-usw2
+      path: stg-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0000-prd-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0000
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0000-prd-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0000-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-use2-next
+    syncSource:
+      targetBranch: environment/prd-use2
+      path: prd-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0000-prd-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0000
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0000-prd-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0000-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-usw2-next
+    syncSource:
+      targetBranch: environment/prd-usw2
+      path: prd-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: promoter-test-0001
+  namespace: argocd
+  labels:
+    asset: promoter-test-0001
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Load test project for asset 0001
+  sourceRepos:
+  - 'https://github.com/crenshaw-dev/promoter-test-0001'
+  - 'https://github.com/crenshaw-dev/promoter-test-0001-deployment'
+  destinations:
+  - namespace: 'promoter-test-0001-*'
+    server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: promoter-test-0001-repo-write-creds
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository-write
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/crenshaw-dev/promoter-test-0001-deployment
+  githubAppID: "2063184"
+  githubAppInstallationID: "88727956"
+data: {}
+  # githubAppPrivateKey should be patched after applying using:
+  # kubectl create secret generic promoter-test-0001-repo-write-creds --from-file=githubAppPrivateKey=path/to/key.pem --dry-run=client -o yaml -n argocd | kubectl apply -f -
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0001-dev-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0001
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0001
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0001-dev-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0001-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-use2-next
+    syncSource:
+      targetBranch: environment/dev-use2
+      path: dev-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0001-dev-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0001
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0001
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0001-dev-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0001-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-usw2-next
+    syncSource:
+      targetBranch: environment/dev-usw2
+      path: dev-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0001-stg-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0001
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0001
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0001-stg-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0001-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-use2-next
+    syncSource:
+      targetBranch: environment/stg-use2
+      path: stg-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0001-stg-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0001
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0001
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0001-stg-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0001-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-usw2-next
+    syncSource:
+      targetBranch: environment/stg-usw2
+      path: stg-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0001-prd-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0001
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0001
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0001-prd-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0001-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-use2-next
+    syncSource:
+      targetBranch: environment/prd-use2
+      path: prd-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0001-prd-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0001
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0001
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0001-prd-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0001-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-usw2-next
+    syncSource:
+      targetBranch: environment/prd-usw2
+      path: prd-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: promoter-test-0002
+  namespace: argocd
+  labels:
+    asset: promoter-test-0002
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Load test project for asset 0002
+  sourceRepos:
+  - 'https://github.com/crenshaw-dev/promoter-test-0002'
+  - 'https://github.com/crenshaw-dev/promoter-test-0002-deployment'
+  destinations:
+  - namespace: 'promoter-test-0002-*'
+    server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: promoter-test-0002-repo-write-creds
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository-write
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/crenshaw-dev/promoter-test-0002-deployment
+  githubAppID: "2063184"
+  githubAppInstallationID: "88727956"
+data: {}
+  # githubAppPrivateKey should be patched after applying using:
+  # kubectl create secret generic promoter-test-0002-repo-write-creds --from-file=githubAppPrivateKey=path/to/key.pem --dry-run=client -o yaml -n argocd | kubectl apply -f -
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0002-dev-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0002
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0002
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0002-dev-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0002-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-use2-next
+    syncSource:
+      targetBranch: environment/dev-use2
+      path: dev-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0002-dev-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0002
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0002
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0002-dev-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0002-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-usw2-next
+    syncSource:
+      targetBranch: environment/dev-usw2
+      path: dev-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0002-stg-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0002
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0002
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0002-stg-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0002-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-use2-next
+    syncSource:
+      targetBranch: environment/stg-use2
+      path: stg-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0002-stg-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0002
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0002
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0002-stg-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0002-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-usw2-next
+    syncSource:
+      targetBranch: environment/stg-usw2
+      path: stg-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0002-prd-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0002
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0002
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0002-prd-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0002-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-use2-next
+    syncSource:
+      targetBranch: environment/prd-use2
+      path: prd-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0002-prd-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0002
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0002
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0002-prd-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0002-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-usw2-next
+    syncSource:
+      targetBranch: environment/prd-usw2
+      path: prd-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: promoter-test-0003
+  namespace: argocd
+  labels:
+    asset: promoter-test-0003
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Load test project for asset 0003
+  sourceRepos:
+  - 'https://github.com/crenshaw-dev/promoter-test-0003'
+  - 'https://github.com/crenshaw-dev/promoter-test-0003-deployment'
+  destinations:
+  - namespace: 'promoter-test-0003-*'
+    server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: promoter-test-0003-repo-write-creds
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository-write
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/crenshaw-dev/promoter-test-0003-deployment
+  githubAppID: "2063184"
+  githubAppInstallationID: "88727956"
+data: {}
+  # githubAppPrivateKey should be patched after applying using:
+  # kubectl create secret generic promoter-test-0003-repo-write-creds --from-file=githubAppPrivateKey=path/to/key.pem --dry-run=client -o yaml -n argocd | kubectl apply -f -
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0003-dev-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0003
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0003
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0003-dev-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0003-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-use2-next
+    syncSource:
+      targetBranch: environment/dev-use2
+      path: dev-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0003-dev-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0003
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0003
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0003-dev-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0003-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-usw2-next
+    syncSource:
+      targetBranch: environment/dev-usw2
+      path: dev-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0003-stg-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0003
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0003
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0003-stg-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0003-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-use2-next
+    syncSource:
+      targetBranch: environment/stg-use2
+      path: stg-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0003-stg-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0003
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0003
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0003-stg-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0003-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-usw2-next
+    syncSource:
+      targetBranch: environment/stg-usw2
+      path: stg-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0003-prd-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0003
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0003
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0003-prd-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0003-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-use2-next
+    syncSource:
+      targetBranch: environment/prd-use2
+      path: prd-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0003-prd-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0003
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0003
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0003-prd-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0003-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-usw2-next
+    syncSource:
+      targetBranch: environment/prd-usw2
+      path: prd-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: promoter-test-0004
+  namespace: argocd
+  labels:
+    asset: promoter-test-0004
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Load test project for asset 0004
+  sourceRepos:
+  - 'https://github.com/crenshaw-dev/promoter-test-0004'
+  - 'https://github.com/crenshaw-dev/promoter-test-0004-deployment'
+  destinations:
+  - namespace: 'promoter-test-0004-*'
+    server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: promoter-test-0004-repo-write-creds
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository-write
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/crenshaw-dev/promoter-test-0004-deployment
+  githubAppID: "2063184"
+  githubAppInstallationID: "88727956"
+data: {}
+  # githubAppPrivateKey should be patched after applying using:
+  # kubectl create secret generic promoter-test-0004-repo-write-creds --from-file=githubAppPrivateKey=path/to/key.pem --dry-run=client -o yaml -n argocd | kubectl apply -f -
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0004-dev-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0004
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0004
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0004-dev-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0004-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-use2-next
+    syncSource:
+      targetBranch: environment/dev-use2
+      path: dev-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0004-dev-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0004
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0004
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0004-dev-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0004-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/dev-usw2-next
+    syncSource:
+      targetBranch: environment/dev-usw2
+      path: dev-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0004-stg-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0004
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0004
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0004-stg-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0004-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-use2-next
+    syncSource:
+      targetBranch: environment/stg-use2
+      path: stg-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0004-stg-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0004
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0004
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0004-stg-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0004-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/stg-usw2-next
+    syncSource:
+      targetBranch: environment/stg-usw2
+      path: stg-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0004-prd-use2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0004
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0004
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0004-prd-use2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0004-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-use2-next
+    syncSource:
+      targetBranch: environment/prd-use2
+      path: prd-use2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promoter-test-0004-prd-usw2
+  namespace: argocd
+  labels:
+    asset: promoter-test-0004
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: promoter-test-0004
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promoter-test-0004-prd-usw2
+  sourceHydrator:
+    drySource:
+      repoURL: https://github.com/crenshaw-dev/promoter-test-0004-deployment
+      path: .
+      targetRevision: HEAD
+    hydrateTo:
+      targetBranch: environment/prd-usw2-next
+    syncSource:
+      targetBranch: environment/prd-usw2
+      path: prd-usw2
+  syncPolicy:
+    automated:
+      selfHeal: true
+
+---
