@@ -600,12 +600,7 @@ log_step "Generating promoter cluster manifests"
 # Create single manifests file for promoter cluster
 PROMOTER_MANIFESTS="$MANIFESTS_DIR/promoter/all-resources.yaml"
 
-# GitHub App Secret (with empty data, static name for reuse)
-cat resource-templates/promoter/github-app-secret.yaml.tpl > "$PROMOTER_MANIFESTS"
-
-echo "---" >> "$PROMOTER_MANIFESTS"
-
-# ClusterScmProvider (static name for reuse)
+# ClusterScmProvider (static name for reuse, references imperatively-created Secret)
 sed -e "s/{{GITHUB_APP_ID}}/$GITHUB_APP_ID/g" \
     -e "s/{{GITHUB_APP_INSTALLATION_ID}}/$GITHUB_APP_INSTALLATION_ID/g" \
     -e "s|{{GITHUB_DOMAIN}}|$GITHUB_DOMAIN|g" \
@@ -809,12 +804,13 @@ cat >> "$LOGS_DIR/SETUP_SUMMARY.md" << EOF
 ### Kubernetes Resources
 
 #### Promoter Cluster
-- 1 GitHub App Secret
-- 1 ClusterScmProvider
+- 1 ClusterScmProvider (references imperatively-created Secret)
 - $NUM_ASSETS Namespaces
 - $NUM_ASSETS GitRepository resources
 - $NUM_ASSETS PromotionStrategy resources
 - $NUM_ASSETS ArgoCDCommitStatus resources
+
+**Note:** The GitHub App Secret (\`promoter-github-app\`) is created imperatively, not managed by GitOps.
 
 #### Argo CD Cluster
 - 1 Load Test AppProject (for deploying promoter manifests)
@@ -833,7 +829,8 @@ Generated manifests are located in: \`$MANIFESTS_DIR/\`
 All resources for each cluster are combined into a single file for easy application:
 
 ### Promoter Cluster
-- \`$MANIFESTS_DIR/promoter/all-resources.yaml\` - Contains GitHub App Secret, ClusterScmProvider, Namespaces, GitRepository, PromotionStrategy, and ArgoCDCommitStatus resources
+- \`$MANIFESTS_DIR/promoter/all-resources.yaml\` - Contains ClusterScmProvider, Namespaces, GitRepository, PromotionStrategy, and ArgoCDCommitStatus resources
+- **Note:** GitHub App Secret (\`promoter-github-app\`) is created imperatively, not in manifests
 
 ### Argo CD Cluster
 - \`$MANIFESTS_DIR/argocd/all-resources.yaml\` - Contains Load Test AppProject/Application, Asset AppProjects, repository write credential Secrets, and Asset Applications
@@ -871,6 +868,21 @@ echo ""
 
 # Track if we've already attempted cleanup
 CLEANUP_ATTEMPTED=false
+
+log_step "Creating GitHub App Secret..."
+log_info "Creating promoter-github-app secret imperatively with private key (not managed by GitOps)"
+kubectl create secret generic promoter-github-app \
+    --namespace=promoter-system \
+    --from-file=githubAppPrivateKey="$GITHUB_APP_KEY_PATH" \
+    --dry-run=client -o yaml | kubectl apply -f -
+
+if [ $? -eq 0 ]; then
+    log_info "✓ Secret created/updated successfully"
+else
+    log_error "✗ Failed to create secret"
+    exit 1
+fi
+echo ""
 
 log_step "Applying manifests to PROMOTER cluster..."
 if ! kubectl create -f "$RUN_DIR/manifests/promoter/all-resources.yaml" 2>&1 | tee /tmp/promoter-apply-error.log; then

@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: promoter-loadtest
   namespace: {{ARGOCD_NAMESPACE}}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: promoter-loadtest
   source:
@@ -24,5 +26,5 @@ spec:
   - group: ''
     kind: Secret
     jsonPointers:
-    - /data/githubAppPrivateKey
+    - /data
 

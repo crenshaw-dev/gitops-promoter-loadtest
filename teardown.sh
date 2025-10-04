@@ -121,6 +121,7 @@ echo ""
 echo -e "${YELLOW}The following commands will delete the Kubernetes resources:${NC}"
 echo ""
 echo -e "${CYAN}# Promoter Cluster:${NC}"
+echo -e "kubectl delete secret promoter-github-app -n promoter-system --ignore-not-found=true"
 echo -e "kubectl delete -f $MANIFESTS_DIR/promoter/all-resources.yaml"
 echo ""
 echo -e "${CYAN}# Argo CD Cluster:${NC}"
@@ -134,6 +135,9 @@ read -p "Would you like to execute these deletion commands now? (Y/n) " -r
 echo
 if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
     log_step "Deleting resources from Promoter cluster..."
+    log_detail "Deleting imperatively-created GitHub App Secret..."
+    kubectl delete secret promoter-github-app -n promoter-system --ignore-not-found=true || log_warn "Secret may not exist"
+    
     if [ -f "$MANIFESTS_DIR/promoter/all-resources.yaml" ]; then
         kubectl delete -f "$MANIFESTS_DIR/promoter/all-resources.yaml" --ignore-not-found=true || log_warn "Some promoter resources may not exist"
     else

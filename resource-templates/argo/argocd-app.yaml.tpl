@@ -5,6 +5,8 @@ metadata:
   namespace: {{ARGOCD_NAMESPACE}}
   labels:
     asset: promoter-test-{{ASSET_ID}}
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
 spec:
   project: promoter-test-{{ASSET_ID}}
   destination:
