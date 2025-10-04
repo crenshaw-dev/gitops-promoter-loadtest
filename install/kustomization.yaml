@@ -12,10 +12,6 @@ resources:
 patches:
   # Patch Argo CD server deployment to add GitOps Promoter UI extension
   - path: argocd/argocd-server-patch.yaml
-    target:
-      kind: Deployment
-      name: argocd-server
-      namespace: argocd
   # Patch Argo CD ConfigMap to add deep links and reduce reconciliation timeout
   - path: argocd/argocd-cm-patch.yaml
     target:
