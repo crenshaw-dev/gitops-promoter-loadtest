@@ -129,10 +129,13 @@ echo -e "kubectl delete appprojects -n $ARGOCD_NAMESPACE -l asset"
 echo -e "kubectl delete appproject promoter-loadtest -n $ARGOCD_NAMESPACE"
 echo -e "kubectl delete secrets -n $ARGOCD_NAMESPACE -l argocd.argoproj.io/secret-type=repository-write"
 echo ""
-echo -e "${CYAN}# Step 3: Delete imperatively-created resources${NC}"
+echo -e "${CYAN}# Step 3: Delete cluster-scoped resources (not deleted by Argo CD)${NC}"
+echo -e "kubectl delete clusterscmprovider promoter-test"
+echo ""
+echo -e "${CYAN}# Step 4: Delete imperatively-created resources${NC}"
 echo -e "kubectl delete secret promoter-github-app -n promoter-system"
 echo ""
-echo -e "${CYAN}# Step 4: Cleanup any remaining namespaces${NC}"
+echo -e "${CYAN}# Step 5: Cleanup any remaining namespaces${NC}"
 echo -e "kubectl delete namespaces -l load-test-run"
 echo ""
 echo -e "${GREEN}Note: Argo CD Application finalizers will automatically clean up managed resources!${NC}"
@@ -153,8 +156,14 @@ if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
         
         # Wait for Applications to actually be deleted (finalizers to complete)
         log_detail "Waiting for Applications to finish deleting (this may take a minute)..."
-        kubectl wait --for=delete application -l asset -n "$ARGOCD_NAMESPACE" --timeout=120s 2>/dev/null || log_warn "Timeout or no Applications found"
-        kubectl wait --for=delete application promoter-loadtest -n "$ARGOCD_NAMESPACE" --timeout=120s 2>/dev/null || log_warn "Timeout or Application not found"
+        # Only wait if Applications exist
+        if kubectl get applications -n "$ARGOCD_NAMESPACE" -l asset &>/dev/null; then
+            kubectl wait --for=delete application -l asset -n "$ARGOCD_NAMESPACE" --timeout=120s 2>/dev/null || log_warn "Timeout or Applications already deleted"
+        fi
+        if kubectl get application promoter-loadtest -n "$ARGOCD_NAMESPACE" &>/dev/null; then
+            kubectl wait --for=delete application promoter-loadtest -n "$ARGOCD_NAMESPACE" --timeout=120s 2>/dev/null || log_warn "Timeout or Application already deleted"
+        fi
+        log_detail "All Applications deleted"
         
         # Now delete AppProjects and other Argo CD resources
         log_detail "Deleting AppProjects and other Argo CD resources..."
@@ -164,6 +173,10 @@ if [[ -z "$REPLY" || $REPLY =~ ^[Yy]$ ]]; then
     else
         log_warn "Argo CD manifests file not found"
     fi
+    
+    log_step "Deleting cluster-scoped resources (not deleted by Argo CD finalizers)..."
+    log_detail "Deleting ClusterScmProvider..."
+    kubectl delete clusterscmprovider promoter-test --ignore-not-found=true || log_warn "ClusterScmProvider may not exist"
     
     log_step "Deleting imperatively-created resources..."
     log_detail "Deleting GitHub App Secret..."
