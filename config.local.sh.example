@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Personal configuration overrides
+# Copy this file to config.local.sh and customize for your environment
+# config.local.sh is gitignored and will not be committed
+
+# Example: Override GitHub organization (or username for personal accounts)
+# export GITHUB_ORG="my-personal-org"
+
+# Example: Override GitHub domain (e.g., for GitHub Enterprise)
+# export GITHUB_DOMAIN="github.enterprise.com"
+
+# Example: Override load test repository configuration (THIS repository)
+# Useful if you forked the repo or are testing changes
+# export LOADTEST_REPO_DOMAIN="github.com"
+# export LOADTEST_REPO_ORG="my-org"
+# export LOADTEST_REPO_NAME="my-fork-of-loadtest"
+
+# Example: Set GitHub App details to avoid prompts
+# export GITHUB_APP_NAME="promoter-test-2025-10-04-10-23-23"
+# export GITHUB_APP_ID="12345"
+# export GITHUB_APP_KEY_PATH="/path/to/your/private-key.pem"
+# export GITHUB_APP_INSTALLATION_ID="12345678"
+
+# Example: Override cluster URLs
+# export PROMOTER_CLUSTER_URL="https://my-promoter-cluster.example.com"
+# export ARGO_CLUSTER_URL="https://my-argo-cluster.example.com"
+# export DESTINATION_CLUSTER_URL="https://my-destination-cluster.example.com"
+
+# Example: Override Argo CD namespace
+# export ARGOCD_NAMESPACE="my-argocd"
+

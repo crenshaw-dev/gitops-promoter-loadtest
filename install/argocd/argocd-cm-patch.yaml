@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+  # Reduce reconciliation timeout for local testing (no webhooks)
+  timeout.reconciliation: "30s"
+  
+  # GitOps Promoter deep links integration
+  resource.links: |
+    - url: '{{.resource.status.url}}'
+      title: Pull Request
+      icon.class: fa-code-pull-request
+      if: resource.apiVersion == "promoter.argoproj.io/v1alpha1" && resource.kind == "PullRequest" && resource.status.url != ""
+    - url: '{{.resource.status.pullRequest.url}}'
+      title: Pull Request
+      icon.class: fa-code-pull-request
+      if: resource.apiVersion == "promoter.argoproj.io/v1alpha1" && resource.kind == "ChangeTransferPolicy" && resource.status.pullRequest != nil && resource.status.pullRequest.url != ""
+

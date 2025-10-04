@@ -1,0 +1,29 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# GitHub App private keys (never commit these!)
+*.pem
+
+# Local config overrides (if you want to keep personal configs out of git)
+config.local.sh
+
+# Local repo templates (organization-specific repo templates that shouldn't be committed)
+repo-templates.local/
+
+# Temporary files
+*.tmp
+*.bak
+.backup/
+
+# Test run data (contains generated manifests and logs)
+runs/*
+!runs/.gitkeep
+

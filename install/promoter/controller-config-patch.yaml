@@ -1,0 +1,12 @@
+apiVersion: promoter.argoproj.io/v1alpha1
+kind: ControllerConfiguration
+metadata:
+  name: promoter-controller-configuration
+  namespace: promoter-system
+spec:
+  # Reduced requeue durations for local testing without webhooks
+  promotionStrategyRequeueDuration: "30s"
+  changeTransferPolicyRequeueDuration: "30s"
+  argocdCommitStatusRequeueDuration: "30s"
+  pullRequestRequeueDuration: "30s"
+
