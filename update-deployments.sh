@@ -46,9 +46,9 @@ if [ -z "$LATEST_RUN" ]; then
     exit 1
 fi
 
-MANIFESTS_DIR="$SCRIPT_DIR/runs/$LATEST_RUN/manifests/argo"
+MANIFESTS_DIR="$SCRIPT_DIR/runs/$LATEST_RUN/manifests/argocd"
 if [ ! -f "$MANIFESTS_DIR/all-resources.yaml" ]; then
-    log_error "No manifests found in runs/$LATEST_RUN/manifests/argo/"
+    log_error "No manifests found in runs/$LATEST_RUN/manifests/argocd/"
     exit 1
 fi
 
@@ -140,26 +140,48 @@ update_repo() {
     fi
 }
 
-# Main update loop
-iteration=1
-log_info "Starting update loop (Ctrl+C to stop)..."
+# Function to handle a single repo in a loop
+handle_repo() {
+    local asset_id=$1
+    local repo_name="promoter-test-${asset_id}-deployment"
+    local iteration=1
+    
+    while true; do
+        # Calculate sleep duration with jitter (spread out the initial updates)
+        local sleep_duration=$(calculate_sleep)
+        
+        # Add initial jitter to stagger repo starts
+        if [ $iteration -eq 1 ]; then
+            local initial_jitter=$((RANDOM % (JITTER * 2)))
+            log_detail "[$repo_name] Starting in ${initial_jitter}s (iteration $iteration)"
+            sleep "$initial_jitter"
+        fi
+        
+        update_repo "$repo_name" || true
+        
+        log_detail "[$repo_name] Next update in ${sleep_duration}s (iteration $((iteration + 1)))"
+        sleep "$sleep_duration"
+        iteration=$((iteration + 1))
+    done
+}
+
+# Start background process for each repo
+log_info "Starting independent update loops for each repo (Ctrl+C to stop all)..."
 echo ""
 
-while true; do
-    log_step "Iteration $iteration - $(date)"
-    
-    # Update each repo
-    for asset_id in $ASSET_IDS; do
-        repo_name="promoter-test-${asset_id}-deployment"
-        update_repo "$repo_name" || true
-    done
-    
-    # Calculate next sleep duration
-    sleep_duration=$(calculate_sleep)
-    log_info "Sleeping for ${sleep_duration}s (next update at $(date -v +${sleep_duration}S '+%H:%M:%S' 2>/dev/null || date -d "+${sleep_duration} seconds" '+%H:%M:%S' 2>/dev/null || echo "in ${sleep_duration}s"))"
-    echo ""
-    
-    sleep "$sleep_duration"
-    iteration=$((iteration + 1))
+PIDS=()
+for asset_id in $ASSET_IDS; do
+    handle_repo "$asset_id" &
+    PIDS+=($!)
+    log_detail "Started background process for promoter-test-${asset_id}-deployment (PID: $!)"
 done
+
+log_info "✓ All $ASSET_COUNT update loops started"
+echo ""
+log_info "Updates will occur independently with ${DURATION}s ±${JITTER}s intervals"
+log_info "Press Ctrl+C to stop all update loops"
+echo ""
+
+# Wait for all background processes (they run forever until interrupted)
+wait
 

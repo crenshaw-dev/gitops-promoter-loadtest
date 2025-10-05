@@ -11,14 +11,14 @@ This directory contains Prometheus and Grafana monitoring for GitOps Promoter an
 
 ## Installation
 
-**Note**: This monitoring stack uses Kustomize's Helm chart inflation feature. You need to enable Helm support:
+**Note**: This monitoring stack uses Kustomize's Helm chart inflation feature. You need to enable Helm support and use server-side apply:
 
 ```bash
-# Apply with Helm support enabled
-kubectl kustomize --enable-helm install/ | kubectl apply -f -
+# Apply with Helm support enabled (--server-side is required for large CRDs)
+kubectl kustomize --enable-helm install/ | kubectl apply --server-side -f -
 
 # Or using kustomize directly
-kustomize build --enable-helm install/ | kubectl apply -f -
+kustomize build --enable-helm install/ | kubectl apply --server-side -f -
 ```
 
 ## Components
@@ -123,8 +123,15 @@ The dashboard JSON files are in `dashboards/`:
 3. Replace the contents of the corresponding file:
    - `dashboards/promoter-dashboard.json`
    - `dashboards/argocd-dashboard.json`
-4. Reapply: `kubectl apply -k install/`
-5. Restart Grafana to reload: `kubectl rollout restart -n monitoring deployment/kube-prometheus-stack-grafana`
+4. Reapply with server-side apply:
+   ```bash
+   kubectl kustomize --enable-helm install/ | kubectl apply --server-side -f -
+   ```
+5. Restart Grafana to reload:
+   ```bash
+   kubectl rollout restart -n monitoring deployment/kube-prometheus-stack-grafana
+   ```
+6. Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R) to clear the dashboard cache
 
 ## Resource Requirements
 

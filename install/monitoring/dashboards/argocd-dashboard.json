@@ -2475,7 +2475,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -2504,12 +2504,13 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(argocd_commitserver_commit_request_total[1m])",
+          "expr": "sum(increase(argocd_commitserver_commit_request_total[$__rate_interval])) by (response_type)",
+          "interval": "1m",
           "refId": "A",
-          "legendFormat": "Commit Requests"
+          "legendFormat": "{{response_type}}"
         }
       ],
-      "title": "Commit Requests per Minute",
+      "title": "Commit Requests",
       "type": "timeseries"
     },
     {
@@ -2679,7 +2680,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -2708,12 +2709,13 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(argocd_commitserver_git_request_total{request_type=\"fetch\"}[1m])",
+          "expr": "sum(increase(argocd_commitserver_git_request_total{request_type=\"fetch\"}[$__rate_interval])) by (repo)",
+          "interval": "1m",
           "refId": "A",
-          "legendFormat": "Git Fetches"
+          "legendFormat": "{{repo}}"
         }
       ],
-      "title": "Git Fetches per Minute",
+      "title": "Git Fetches",
       "type": "timeseries"
     },
     {
@@ -2883,7 +2885,7 @@
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -2912,12 +2914,13 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "rate(argocd_commitserver_git_request_total{request_type=\"push\"}[1m])",
+          "expr": "sum(increase(argocd_commitserver_git_request_total{request_type=\"push\"}[$__rate_interval])) by (repo)",
+          "interval": "1m",
           "refId": "A",
-          "legendFormat": "Git Pushes"
+          "legendFormat": "{{repo}}"
         }
       ],
-      "title": "Git Pushes per Minute",
+      "title": "Git Pushes",
       "type": "timeseries"
     },
     {

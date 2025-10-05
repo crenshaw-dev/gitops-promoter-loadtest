@@ -1,13 +1,26 @@
 {
   "annotations": {
-    "list": []
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
   },
+  "description": "GitOps Promoter metrics dashboard showing git operations, SCM API calls, rate limits, and webhook processing performance",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
+  "id": 3,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
@@ -33,19 +46,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 100,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -68,11 +84,10 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
-          },
-          "unit": "ops"
+          }
         },
         "overrides": []
       },
@@ -83,30 +98,40 @@
         "y": 1
       },
       "id": 2,
+      "interval": "1m",
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum",
+            "mean"
+          ],
           "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(git_operations_total{result=\"success\"}[1m])) by (operation)",
-          "refId": "A",
-          "legendFormat": "{{operation}}"
+          "editorMode": "code",
+          "expr": "sum(increase(git_operations_total{result=\"success\"}[$__rate_interval])) by (operation)",
+          "legendFormat": "{{operation}}",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "title": "Git Operations per Minute (by type)",
+      "title": "Git Operations (by type)",
       "type": "timeseries"
     },
     {
@@ -118,18 +143,14 @@
         "defaults": {
           "custom": {
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
             "scaleDistribution": {
               "type": "linear"
             }
-          },
-          "color": {
-            "mode": "continuous-BlYlRd"
-          },
-          "unit": "s"
+          }
         },
         "overrides": []
       },
@@ -165,7 +186,8 @@
           "layout": "auto"
         },
         "tooltip": {
-          "show": true,
+          "mode": "single",
+          "showColorScale": false,
           "yHistogram": true
         },
         "yAxis": {
@@ -174,7 +196,7 @@
           "unit": "s"
         }
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -183,8 +205,8 @@
           },
           "expr": "sum(rate(git_operations_duration_seconds_bucket{result=\"success\"}[5m])) by (le, operation)",
           "format": "heatmap",
-          "refId": "A",
-          "legendFormat": "{{operation}}"
+          "legendFormat": "{{operation}}",
+          "refId": "A"
         }
       ],
       "title": "Git Operations Duration Heatmap",
@@ -201,19 +223,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 100,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -236,7 +261,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -269,28 +294,32 @@
       "id": 4,
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(git_operations_total[1m])) by (operation, result)",
-          "refId": "A",
-          "legendFormat": "{{operation}} ({{result}})"
+          "expr": "sum(increase(git_operations_total[$__interval])) by (operation, result)",
+          "legendFormat": "{{operation}} ({{result}})",
+          "refId": "A"
         }
       ],
-      "title": "Git Operations per Minute (success vs failure)",
+      "title": "Git Operations (success vs failure)",
       "type": "timeseries"
     },
     {
@@ -304,19 +333,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -339,7 +371,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -356,16 +388,21 @@
       "id": 5,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -373,8 +410,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.50, sum(rate(git_operations_duration_seconds_bucket{result=\"success\"}[5m])) by (le, operation))",
-          "refId": "A",
-          "legendFormat": "{{operation}} p50"
+          "legendFormat": "{{operation}} p50",
+          "refId": "A"
         },
         {
           "datasource": {
@@ -382,8 +419,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum(rate(git_operations_duration_seconds_bucket{result=\"success\"}[5m])) by (le, operation))",
-          "refId": "B",
-          "legendFormat": "{{operation}} p95"
+          "legendFormat": "{{operation}} p95",
+          "refId": "B"
         },
         {
           "datasource": {
@@ -391,8 +428,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.99, sum(rate(git_operations_duration_seconds_bucket{result=\"success\"}[5m])) by (le, operation))",
-          "refId": "C",
-          "legendFormat": "{{operation}} p99"
+          "legendFormat": "{{operation}} p99",
+          "refId": "C"
         }
       ],
       "title": "Git Operations Duration Percentiles",
@@ -422,19 +459,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 100,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -457,11 +497,11 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -472,30 +512,38 @@
         "y": 18
       },
       "id": 7,
+      "interval": "1m",
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum",
+            "mean"
+          ],
           "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(scm_calls_total[1m])) by (api, operation)",
-          "refId": "A",
-          "legendFormat": "{{api}}/{{operation}}"
+          "expr": "sum(increase(scm_calls_total[$__rate_interval])) by (api, operation)",
+          "legendFormat": "{{api}}/{{operation}}",
+          "refId": "A"
         }
       ],
-      "title": "SCM API Calls per Minute (by API and operation)",
+      "title": "SCM API Calls (by API and operation)",
       "type": "timeseries"
     },
     {
@@ -507,18 +555,14 @@
         "defaults": {
           "custom": {
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
             "scaleDistribution": {
               "type": "linear"
             }
-          },
-          "color": {
-            "mode": "continuous-BlYlRd"
-          },
-          "unit": "s"
+          }
         },
         "overrides": []
       },
@@ -554,7 +598,8 @@
           "layout": "auto"
         },
         "tooltip": {
-          "show": true,
+          "mode": "single",
+          "showColorScale": false,
           "yHistogram": true
         },
         "yAxis": {
@@ -563,7 +608,7 @@
           "unit": "s"
         }
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -572,8 +617,8 @@
           },
           "expr": "sum(rate(scm_calls_duration_seconds_bucket[5m])) by (le, api, operation)",
           "format": "heatmap",
-          "refId": "A",
-          "legendFormat": "{{api}}/{{operation}}"
+          "legendFormat": "{{api}}/{{operation}}",
+          "refId": "A"
         }
       ],
       "title": "SCM API Call Duration Heatmap",
@@ -590,19 +635,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 100,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -625,11 +673,11 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": [
           {
@@ -656,30 +704,38 @@
         "y": 26
       },
       "id": 9,
+      "interval": "1m",
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum",
+            "mean"
+          ],
           "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(scm_calls_total[1m])) by (response_code)",
-          "refId": "A",
-          "legendFormat": "HTTP {{response_code}}"
+          "expr": "sum(increase(scm_calls_total[$__rate_interval])) by (response_code)",
+          "legendFormat": "HTTP {{response_code}}",
+          "refId": "A"
         }
       ],
-      "title": "SCM API Calls per Minute (by response code)",
+      "title": "SCM API Calls (by response code)",
       "type": "timeseries"
     },
     {
@@ -693,19 +749,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -728,7 +787,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -745,16 +804,21 @@
       "id": 10,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -762,8 +826,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.50, sum(rate(scm_calls_duration_seconds_bucket[5m])) by (le, api, operation))",
-          "refId": "A",
-          "legendFormat": "{{api}}/{{operation}} p50"
+          "legendFormat": "{{api}}/{{operation}} p50",
+          "refId": "A"
         },
         {
           "datasource": {
@@ -771,8 +835,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum(rate(scm_calls_duration_seconds_bucket[5m])) by (le, api, operation))",
-          "refId": "B",
-          "legendFormat": "{{api}}/{{operation}} p95"
+          "legendFormat": "{{api}}/{{operation}} p95",
+          "refId": "B"
         },
         {
           "datasource": {
@@ -780,8 +844,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.99, sum(rate(scm_calls_duration_seconds_bucket[5m])) by (le, api, operation))",
-          "refId": "C",
-          "legendFormat": "{{api}}/{{operation}} p99"
+          "legendFormat": "{{api}}/{{operation}} p99",
+          "refId": "C"
         }
       ],
       "title": "SCM API Call Duration Percentiles",
@@ -816,7 +880,7 @@
             "steps": [
               {
                 "color": "red",
-                "value": null
+                "value": 0
               },
               {
                 "color": "orange",
@@ -840,16 +904,21 @@
       },
       "id": 12,
       "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "values": false,
-          "calcs": ["lastNotNull"],
-          "fields": ""
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -857,8 +926,8 @@
             "uid": "${datasource}"
           },
           "expr": "scm_calls_rate_limit_remaining",
-          "refId": "A",
-          "legendFormat": "{{scm_provider}}"
+          "legendFormat": "{{scm_provider}}",
+          "refId": "A"
         }
       ],
       "title": "Rate Limit Remaining",
@@ -875,19 +944,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 10,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 2,
             "pointSize": 5,
@@ -910,7 +982,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -933,10 +1005,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -944,8 +1018,8 @@
             "uid": "${datasource}"
           },
           "expr": "scm_calls_rate_limit_remaining",
-          "refId": "A",
-          "legendFormat": "{{scm_provider}} remaining"
+          "legendFormat": "{{scm_provider}} remaining",
+          "refId": "A"
         },
         {
           "datasource": {
@@ -953,8 +1027,8 @@
             "uid": "${datasource}"
           },
           "expr": "scm_calls_rate_limit_limit",
-          "refId": "B",
-          "legendFormat": "{{scm_provider}} limit"
+          "legendFormat": "{{scm_provider}} limit",
+          "refId": "B"
         }
       ],
       "title": "Rate Limit Remaining Over Time",
@@ -976,7 +1050,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -1000,16 +1074,21 @@
       },
       "id": 14,
       "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "values": false,
-          "calcs": ["lastNotNull"],
-          "fields": ""
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
         "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "showThresholdMarkers": true,
+        "sizing": "auto"
       },
-      "pluginVersion": "10.0.0",
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -1017,8 +1096,8 @@
             "uid": "${datasource}"
           },
           "expr": "scm_calls_rate_limit_reset_remaining_seconds",
-          "refId": "A",
-          "legendFormat": "{{scm_provider}}"
+          "legendFormat": "{{scm_provider}}",
+          "refId": "A"
         }
       ],
       "title": "Seconds Until Rate Limit Reset",
@@ -1048,19 +1127,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "bars",
             "fillOpacity": 100,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1083,11 +1165,11 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": [
           {
@@ -1114,30 +1196,38 @@
         "y": 44
       },
       "id": 16,
+      "interval": "1m",
       "options": {
         "legend": {
-          "calcs": ["sum"],
+          "calcs": [
+            "sum",
+            "mean"
+          ],
           "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(webhook_processing_duration_seconds_count[1m])) by (ctp_found, response_code)",
-          "refId": "A",
-          "legendFormat": "CTP found: {{ctp_found}}, HTTP {{response_code}}"
+          "expr": "sum(increase(webhook_processing_duration_seconds_count[$__rate_interval])) by (ctp_found, response_code)",
+          "legendFormat": "CTP found: {{ctp_found}}, HTTP {{response_code}}",
+          "refId": "A"
         }
       ],
-      "title": "Webhook Requests per Minute",
+      "title": "Webhook Requests",
       "type": "timeseries"
     },
     {
@@ -1151,19 +1241,22 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
+              "legend": false,
               "tooltip": false,
-              "viz": false,
-              "legend": false
+              "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1186,7 +1279,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1203,16 +1296,21 @@
       "id": 17,
       "options": {
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
+      "pluginVersion": "12.1.1",
       "targets": [
         {
           "datasource": {
@@ -1220,8 +1318,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.50, sum(rate(webhook_processing_duration_seconds_bucket[5m])) by (le))",
-          "refId": "A",
-          "legendFormat": "p50"
+          "legendFormat": "p50",
+          "refId": "A"
         },
         {
           "datasource": {
@@ -1229,8 +1327,8 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.95, sum(rate(webhook_processing_duration_seconds_bucket[5m])) by (le))",
-          "refId": "B",
-          "legendFormat": "p95"
+          "legendFormat": "p95",
+          "refId": "B"
         },
         {
           "datasource": {
@@ -1238,35 +1336,34 @@
             "uid": "${datasource}"
           },
           "expr": "histogram_quantile(0.99, sum(rate(webhook_processing_duration_seconds_bucket[5m])) by (le))",
-          "refId": "C",
-          "legendFormat": "p99"
+          "legendFormat": "p99",
+          "refId": "C"
         }
       ],
       "title": "Webhook Processing Duration Percentiles",
       "type": "timeseries"
     }
   ],
-  "schemaVersion": 38,
-  "style": "dark",
-  "tags": ["promoter", "gitops"],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [
+    "promoter",
+    "gitops"
+  ],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": false,
           "text": "Prometheus",
           "value": "Prometheus"
         },
-        "hide": 0,
         "includeAll": false,
         "label": "Data Source",
-        "multi": false,
         "name": "datasource",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       }
     ]
@@ -1279,6 +1376,5 @@
   "timezone": "",
   "title": "GitOps Promoter",
   "uid": "gitops-promoter",
-  "version": 1,
-  "description": "GitOps Promoter metrics dashboard showing git operations, SCM API calls, rate limits, and webhook processing performance"
+  "version": 12
 }
